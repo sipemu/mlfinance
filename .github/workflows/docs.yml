@@ -7,6 +7,7 @@ on:
       - "crates/pymlfinance/docs/**"
       - "crates/pymlfinance/python/**"
       - "crates/pymlfinance/mkdocs.yml"
+      - "crates/pymlfinance/examples/**"
   workflow_dispatch:
 
 permissions:
@@ -22,7 +23,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: pip install mkdocs-material "mkdocstrings[python]"
+        run: pip install mkdocs-material "mkdocstrings[python]" mkdocs-jupyter
       - name: Build and deploy
         working-directory: crates/pymlfinance
         run: mkdocs gh-deploy --force

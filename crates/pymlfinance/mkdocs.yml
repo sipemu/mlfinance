@@ -28,6 +28,10 @@ theme:
 
 plugins:
   - search
+  - mkdocs-jupyter:
+      execute: false
+      allow_errors: false
+      include_source: true
   - mkdocstrings:
       handlers:
         python:
@@ -56,6 +60,22 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Polars Integration: polars.md
+  - Examples:
+      - Overview: examples-overview.md
+      - Financial Data Structures: examples/ch02_financial_data_structures.ipynb
+      - Labeling: examples/ch03_labeling.ipynb
+      - Sample Weights: examples/ch04_sample_weights.ipynb
+      - Fractional Differentiation: examples/ch05_fractional_differentiation.ipynb
+      - Ensemble Methods: examples/ch06_ensemble_methods.ipynb
+      - Cross-Validation: examples/ch07_cross_validation.ipynb
+      - Feature Importance: examples/ch08_feature_importance.ipynb
+      - Bet Sizing: examples/ch10_bet_sizing.ipynb
+      - Backtesting Dangers: examples/ch11_backtesting_dangers.ipynb
+      - Synthetic Data: examples/ch13_synthetic_data.ipynb
+      - Backtest Statistics: examples/ch14_backtest_statistics.ipynb
+      - Structural Breaks: examples/ch17_structural_breaks.ipynb
+      - Entropy Features: examples/ch18_entropy_features.ipynb
+      - Microstructure: examples/ch19_microstructure.ipynb
   - API Reference:
       - Core: api/core.md
       - Data: api/data.md
