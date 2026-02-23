@@ -1,0 +1,34 @@
+{
+  "events": [
+    [
+      0,
+      5
+    ],
+    [
+      3,
+      8
+    ],
+    [
+      6,
+      12
+    ],
+    [
+      10,
+      15
+    ],
+    [
+      13,
+      18
+    ]
+  ],
+  "num_bars": 20,
+  "n_samples": 5,
+  "avg_uniqueness": [
+    0.75,
+    0.5,
+    0.5714285714285714,
+    0.5,
+    0.75
+  ],
+  "note": "RNG differs between Rust/Python; validate uniqueness scores, not exact draws"
+}

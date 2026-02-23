@@ -1,0 +1,36 @@
+[package]
+name = "mlfinance-features"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Financial features: HRP, structural breaks, entropy, microstructure"
+
+[dependencies]
+mlfinance-core = { workspace = true }
+mlfinance-parallel = { workspace = true }
+mlfinance-data = { workspace = true }
+ndarray = { workspace = true }
+ndarray-stats = { workspace = true }
+statrs = { workspace = true }
+rand = { workspace = true }
+rand_distr = { workspace = true }
+rayon = { workspace = true }
+
+[dev-dependencies]
+approx = { workspace = true }
+proptest = { workspace = true }
+serde_json = { workspace = true }
+criterion = { workspace = true }
+
+[[bench]]
+name = "hrp_bench"
+harness = false
+
+[[bench]]
+name = "sadf_bench"
+harness = false
+
+[[bench]]
+name = "entropy_bench"
+harness = false

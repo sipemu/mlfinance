@@ -1,0 +1,19 @@
+[package]
+name = "mlfinance"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Advances in Financial Machine Learning - Rust implementation"
+
+[dependencies]
+mlfinance-core = { workspace = true }
+mlfinance-parallel = { workspace = true }
+mlfinance-data = { workspace = true }
+mlfinance-labeling = { workspace = true }
+mlfinance-sampling = { workspace = true }
+mlfinance-modeling = { workspace = true }
+mlfinance-backtesting = { workspace = true }
+mlfinance-features = { workspace = true }
+ndarray = { workspace = true }
+chrono = { workspace = true }

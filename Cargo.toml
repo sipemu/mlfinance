@@ -1,0 +1,47 @@
+[workspace]
+members = [
+    "crates/mlfinance-core",
+    "crates/mlfinance-parallel",
+    "crates/mlfinance-data",
+    "crates/mlfinance-labeling",
+    "crates/mlfinance-sampling",
+    "crates/mlfinance-modeling",
+    "crates/mlfinance-backtesting",
+    "crates/mlfinance-features",
+    "crates/mlfinance",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+rust-version = "1.75"
+
+[workspace.dependencies]
+# Internal crates
+mlfinance-core = { path = "crates/mlfinance-core" }
+mlfinance-parallel = { path = "crates/mlfinance-parallel" }
+mlfinance-data = { path = "crates/mlfinance-data" }
+mlfinance-labeling = { path = "crates/mlfinance-labeling" }
+mlfinance-sampling = { path = "crates/mlfinance-sampling" }
+mlfinance-modeling = { path = "crates/mlfinance-modeling" }
+mlfinance-backtesting = { path = "crates/mlfinance-backtesting" }
+mlfinance-features = { path = "crates/mlfinance-features" }
+
+# External dependencies
+ndarray = { version = "0.16", features = ["serde"] }
+ndarray-stats = "0.6"
+statrs = "0.17"
+rand = "0.8"
+rand_distr = "0.4"
+rayon = "1.10"
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0"
+approx = "0.5"
+num-traits = "0.2"
+itertools = "0.13"
+proptest = "1.4"
+criterion = { version = "0.5", features = ["html_reports"] }
+serde_json = "1.0"

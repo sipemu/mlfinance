@@ -1,0 +1,24 @@
+[package]
+name = "mlfinance-modeling"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "ML infrastructure: purged CV, feature importance, hyperparameters"
+
+[dependencies]
+mlfinance-core = { workspace = true }
+mlfinance-parallel = { workspace = true }
+mlfinance-labeling = { workspace = true }
+mlfinance-sampling = { workspace = true }
+ndarray = { workspace = true }
+rand = { workspace = true }
+statrs = { workspace = true }
+rayon = { workspace = true }
+itertools = { workspace = true }
+
+[dev-dependencies]
+approx = { workspace = true }
+rand_distr = { workspace = true }
+proptest = { workspace = true }
+serde_json = { workspace = true }

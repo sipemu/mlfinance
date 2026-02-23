@@ -1,0 +1,274 @@
+{
+  "cases": [
+    {
+      "type": "sigmoid",
+      "prob": 0.0,
+      "num_classes": 2,
+      "result": -1.0
+    },
+    {
+      "type": "power",
+      "prob": 0.0,
+      "num_classes": 2,
+      "exponent": 1.0,
+      "result": -1.0
+    },
+    {
+      "type": "power",
+      "prob": 0.0,
+      "num_classes": 2,
+      "exponent": 2.0,
+      "result": -1.0
+    },
+    {
+      "type": "power",
+      "prob": 0.0,
+      "num_classes": 2,
+      "exponent": 0.5,
+      "result": -1.0
+    },
+    {
+      "type": "sigmoid",
+      "prob": 0.0,
+      "num_classes": 3,
+      "result": -0.49999999999999994
+    },
+    {
+      "type": "power",
+      "prob": 0.0,
+      "num_classes": 3,
+      "exponent": 1.0,
+      "result": -0.49999999999999994
+    },
+    {
+      "type": "power",
+      "prob": 0.0,
+      "num_classes": 3,
+      "exponent": 2.0,
+      "result": -0.24999999999999994
+    },
+    {
+      "type": "power",
+      "prob": 0.0,
+      "num_classes": 3,
+      "exponent": 0.5,
+      "result": -0.7071067811865475
+    },
+    {
+      "type": "sigmoid",
+      "prob": 0.25,
+      "num_classes": 2,
+      "result": -0.5
+    },
+    {
+      "type": "power",
+      "prob": 0.25,
+      "num_classes": 2,
+      "exponent": 1.0,
+      "result": -0.5
+    },
+    {
+      "type": "power",
+      "prob": 0.25,
+      "num_classes": 2,
+      "exponent": 2.0,
+      "result": -0.25
+    },
+    {
+      "type": "power",
+      "prob": 0.25,
+      "num_classes": 2,
+      "exponent": 0.5,
+      "result": -0.7071067811865476
+    },
+    {
+      "type": "sigmoid",
+      "prob": 0.25,
+      "num_classes": 3,
+      "result": -0.12499999999999996
+    },
+    {
+      "type": "power",
+      "prob": 0.25,
+      "num_classes": 3,
+      "exponent": 1.0,
+      "result": -0.12499999999999996
+    },
+    {
+      "type": "power",
+      "prob": 0.25,
+      "num_classes": 3,
+      "exponent": 2.0,
+      "result": -0.01562499999999999
+    },
+    {
+      "type": "power",
+      "prob": 0.25,
+      "num_classes": 3,
+      "exponent": 0.5,
+      "result": -0.35355339059327373
+    },
+    {
+      "type": "sigmoid",
+      "prob": 0.5,
+      "num_classes": 2,
+      "result": 0.0
+    },
+    {
+      "type": "power",
+      "prob": 0.5,
+      "num_classes": 2,
+      "exponent": 1.0,
+      "result": 0.0
+    },
+    {
+      "type": "power",
+      "prob": 0.5,
+      "num_classes": 2,
+      "exponent": 2.0,
+      "result": 0.0
+    },
+    {
+      "type": "power",
+      "prob": 0.5,
+      "num_classes": 2,
+      "exponent": 0.5,
+      "result": 0.0
+    },
+    {
+      "type": "sigmoid",
+      "prob": 0.5,
+      "num_classes": 3,
+      "result": 0.25
+    },
+    {
+      "type": "power",
+      "prob": 0.5,
+      "num_classes": 3,
+      "exponent": 1.0,
+      "result": 0.25
+    },
+    {
+      "type": "power",
+      "prob": 0.5,
+      "num_classes": 3,
+      "exponent": 2.0,
+      "result": 0.0625
+    },
+    {
+      "type": "power",
+      "prob": 0.5,
+      "num_classes": 3,
+      "exponent": 0.5,
+      "result": 0.5
+    },
+    {
+      "type": "sigmoid",
+      "prob": 0.75,
+      "num_classes": 2,
+      "result": 0.5
+    },
+    {
+      "type": "power",
+      "prob": 0.75,
+      "num_classes": 2,
+      "exponent": 1.0,
+      "result": 0.5
+    },
+    {
+      "type": "power",
+      "prob": 0.75,
+      "num_classes": 2,
+      "exponent": 2.0,
+      "result": 0.25
+    },
+    {
+      "type": "power",
+      "prob": 0.75,
+      "num_classes": 2,
+      "exponent": 0.5,
+      "result": 0.7071067811865476
+    },
+    {
+      "type": "sigmoid",
+      "prob": 0.75,
+      "num_classes": 3,
+      "result": 0.625
+    },
+    {
+      "type": "power",
+      "prob": 0.75,
+      "num_classes": 3,
+      "exponent": 1.0,
+      "result": 0.625
+    },
+    {
+      "type": "power",
+      "prob": 0.75,
+      "num_classes": 3,
+      "exponent": 2.0,
+      "result": 0.390625
+    },
+    {
+      "type": "power",
+      "prob": 0.75,
+      "num_classes": 3,
+      "exponent": 0.5,
+      "result": 0.7905694150420949
+    },
+    {
+      "type": "sigmoid",
+      "prob": 1.0,
+      "num_classes": 2,
+      "result": 1.0
+    },
+    {
+      "type": "power",
+      "prob": 1.0,
+      "num_classes": 2,
+      "exponent": 1.0,
+      "result": 1.0
+    },
+    {
+      "type": "power",
+      "prob": 1.0,
+      "num_classes": 2,
+      "exponent": 2.0,
+      "result": 1.0
+    },
+    {
+      "type": "power",
+      "prob": 1.0,
+      "num_classes": 2,
+      "exponent": 0.5,
+      "result": 1.0
+    },
+    {
+      "type": "sigmoid",
+      "prob": 1.0,
+      "num_classes": 3,
+      "result": 1.0
+    },
+    {
+      "type": "power",
+      "prob": 1.0,
+      "num_classes": 3,
+      "exponent": 1.0,
+      "result": 1.0
+    },
+    {
+      "type": "power",
+      "prob": 1.0,
+      "num_classes": 3,
+      "exponent": 2.0,
+      "result": 1.0
+    },
+    {
+      "type": "power",
+      "prob": 1.0,
+      "num_classes": 3,
+      "exponent": 0.5,
+      "result": 1.0
+    }
+  ]
+}

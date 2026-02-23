@@ -1,0 +1,35 @@
+[package]
+name = "mlfinance-backtesting"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Backtesting: bet sizing, CPCV, statistics, strategy risk"
+
+[dependencies]
+mlfinance-core = { workspace = true }
+mlfinance-parallel = { workspace = true }
+mlfinance-data = { workspace = true }
+mlfinance-labeling = { workspace = true }
+mlfinance-sampling = { workspace = true }
+mlfinance-modeling = { workspace = true }
+ndarray = { workspace = true }
+statrs = { workspace = true }
+rand = { workspace = true }
+rand_distr = { workspace = true }
+itertools = { workspace = true }
+chrono = { workspace = true }
+
+[dev-dependencies]
+approx = { workspace = true }
+proptest = { workspace = true }
+serde_json = { workspace = true }
+criterion = { workspace = true }
+
+[[bench]]
+name = "bet_sizing_bench"
+harness = false
+
+[[bench]]
+name = "statistics_bench"
+harness = false

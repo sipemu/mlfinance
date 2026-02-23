@@ -1,0 +1,31 @@
+[package]
+name = "mlfinance-sampling"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Sample weights, sequential bootstrap, fractional differentiation"
+
+[dependencies]
+mlfinance-core = { workspace = true }
+mlfinance-parallel = { workspace = true }
+mlfinance-data = { workspace = true }
+mlfinance-labeling = { workspace = true }
+ndarray = { workspace = true }
+statrs = { workspace = true }
+rand = { workspace = true }
+chrono = { workspace = true }
+
+[dev-dependencies]
+approx = { workspace = true }
+proptest = { workspace = true }
+serde_json = { workspace = true }
+criterion = { workspace = true }
+
+[[bench]]
+name = "fracdiff_bench"
+harness = false
+
+[[bench]]
+name = "bootstrap_bench"
+harness = false
