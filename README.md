@@ -75,6 +75,8 @@ sr = ml.backtesting.sharpe_ratio(ret)
 
 The Python package exposes 7 submodules (`core`, `data`, `labeling`, `sampling`, `features`, `modeling`, `backtesting`) wrapping ~140 functions with zero-copy NumPy conversion. Requires Python >= 3.9.
 
+**[Python API Documentation](https://sipemu.github.io/mlfinance/)**
+
 ## Examples
 
 Self-contained examples covering the main workflows (see `crates/mlfinance/examples/`):

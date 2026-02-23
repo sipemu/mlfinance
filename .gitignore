@@ -7,6 +7,9 @@
 .DS_Store
 /docs/
 
+# mkdocs build output
+site/
+
 # Python artifacts
 __pycache__/
 *.py[cod]

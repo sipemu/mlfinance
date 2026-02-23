@@ -6,18 +6,67 @@ use crate::types::*;
 
 // ── Fractional differentiation ──────────────────────────────────────────────
 
+/// Compute fractional differentiation weights (AFML Ch. 5).
+///
+/// Returns the weight vector for a given differentiation order ``d``.
+/// Weights decay with lag; the series ``size`` controls truncation.
+///
+/// Parameters
+/// ----------
+/// d : float
+///     Fractional differentiation order (0 < d < 1 for stationarity).
+/// size : int
+///     Number of weights to compute.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Weight vector of length ``size``.
 #[pyfunction]
 fn get_weights(py: Python<'_>, d: f64, size: usize) -> Py<PyArray1<f64>> {
     let result = mlfinance::sampling::fracdiff::weights::get_weights(d, size);
     vec_to_py_array(py, result)
 }
 
+/// Compute FFD (Fixed-width window Fractional Differentiation) weights.
+///
+/// Truncates weights below a threshold to create a fixed-width kernel.
+///
+/// Parameters
+/// ----------
+/// d : float
+///     Fractional differentiation order.
+/// threshold : float
+///     Minimum absolute weight to keep (e.g. 1e-4).
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Truncated weight vector.
 #[pyfunction]
 fn get_weights_ffd(py: Python<'_>, d: f64, threshold: f64) -> Py<PyArray1<f64>> {
     let result = mlfinance::sampling::fracdiff::weights::get_weights_ffd(d, threshold);
     vec_to_py_array(py, result)
 }
 
+/// Apply FFD (fixed-width window fractional differentiation) to a series.
+///
+/// Produces a stationary series that retains memory, using a truncated
+/// weight kernel (AFML Ch. 5).
+///
+/// Parameters
+/// ----------
+/// series : numpy.ndarray
+///     Input time series (e.g. log prices).
+/// d : float
+///     Differentiation order (typically 0.3-0.7).
+/// threshold : float
+///     Weight truncation threshold (e.g. 1e-4).
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Fractionally differenced series.
 #[pyfunction]
 fn frac_diff_ffd(
     py: Python<'_>,
@@ -30,6 +79,24 @@ fn frac_diff_ffd(
     vec_to_py_array(py, result)
 }
 
+/// Expanding-window fractional differentiation.
+///
+/// Uses all available history at each point (no truncation), producing
+/// a more accurate but slower computation.
+///
+/// Parameters
+/// ----------
+/// series : numpy.ndarray
+///     Input time series.
+/// d : float
+///     Differentiation order.
+/// threshold : float
+///     Minimum weight for inclusion.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Fractionally differenced series.
 #[pyfunction]
 fn frac_diff_expanding(
     py: Python<'_>,
@@ -42,6 +109,26 @@ fn frac_diff_expanding(
     vec_to_py_array(py, result)
 }
 
+/// Find the minimum fractional differentiation order that makes a series stationary.
+///
+/// Performs a grid search over d values, applying FFD and testing stationarity
+/// with ADF at each step (AFML Ch. 5).
+///
+/// Parameters
+/// ----------
+/// series : numpy.ndarray
+///     Input time series.
+/// max_d : float
+///     Maximum d to test.
+/// step_size : float
+///     Increment between d values.
+/// threshold : float
+///     Weight truncation threshold for FFD.
+///
+/// Returns
+/// -------
+/// float
+///     Minimum d for stationarity (returns max_d if none found).
 #[pyfunction]
 fn find_min_d(
     series: PyReadonlyArray1<'_, f64>,
@@ -55,6 +142,21 @@ fn find_min_d(
 
 // ── Bootstrap ───────────────────────────────────────────────────────────────
 
+/// Standard IID bootstrap sampling.
+///
+/// Parameters
+/// ----------
+/// num_observations : int
+///     Total number of observations to sample from.
+/// num_samples : int
+///     Number of bootstrap samples to draw.
+/// seed : int
+///     Random seed.
+///
+/// Returns
+/// -------
+/// list[int]
+///     Sampled indices (with replacement).
 #[pyfunction]
 fn standard_bootstrap(
     py: Python<'_>,
@@ -70,6 +172,24 @@ fn standard_bootstrap(
     vec_usize_to_list(py, result)
 }
 
+/// Sequential bootstrap with uniqueness-aware sampling (AFML Ch. 4).
+///
+/// Draws samples with probability proportional to their average uniqueness,
+/// reducing redundancy from overlapping labels.
+///
+/// Parameters
+/// ----------
+/// ind_matrix : numpy.ndarray
+///     Indicator matrix (n_events x n_bars) from ``get_indicator_matrix``.
+/// num_samples : int
+///     Number of samples to draw.
+/// seed : int
+///     Random seed.
+///
+/// Returns
+/// -------
+/// list[int]
+///     Sampled event indices.
 #[pyfunction]
 fn seq_bootstrap(
     py: Python<'_>,
@@ -82,6 +202,23 @@ fn seq_bootstrap(
     vec_usize_to_list(py, result)
 }
 
+/// Monte Carlo comparison of sequential vs. standard bootstrap uniqueness.
+///
+/// Parameters
+/// ----------
+/// ind_matrix : numpy.ndarray
+///     Indicator matrix (n_events x n_bars).
+/// num_samples : int
+///     Samples per trial.
+/// num_trials : int
+///     Number of Monte Carlo repetitions.
+/// seed : int
+///     Random seed.
+///
+/// Returns
+/// -------
+/// BootstrapComparison
+///     Average uniqueness for sequential and standard methods.
 #[pyfunction]
 fn compare_bootstraps(
     ind_matrix: PyReadonlyArray2<'_, f64>,
@@ -104,6 +241,19 @@ fn compare_bootstraps(
 
 // ── Concurrency ─────────────────────────────────────────────────────────────
 
+/// Count concurrent events at each bar (AFML Ch. 4).
+///
+/// Parameters
+/// ----------
+/// events : list[tuple[int, int]]
+///     List of (entry_idx, exit_idx) pairs.
+/// num_bars : int
+///     Total number of bars in the series.
+///
+/// Returns
+/// -------
+/// list[int]
+///     Number of active events at each bar index.
 #[pyfunction]
 fn num_co_events(
     py: Python<'_>,
@@ -114,6 +264,20 @@ fn num_co_events(
     vec_usize_to_list(py, result)
 }
 
+/// Build an indicator matrix mapping events to bars.
+///
+/// Parameters
+/// ----------
+/// events : list[tuple[int, int]]
+///     List of (entry_idx, exit_idx) pairs.
+/// num_bars : int
+///     Total number of bars.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Binary matrix of shape (n_events, num_bars) where entry (i, j) = 1
+///     if event i is active at bar j.
 #[pyfunction]
 fn get_indicator_matrix(
     py: Python<'_>,
@@ -125,6 +289,22 @@ fn get_indicator_matrix(
     array2_to_py(py, result)
 }
 
+/// Compute average uniqueness of each event (AFML Ch. 4).
+///
+/// Uniqueness at bar j for event i is 1 / (number of concurrent events at j).
+/// Average uniqueness is the mean across all bars spanned by the event.
+///
+/// Parameters
+/// ----------
+/// events : list[tuple[int, int]]
+///     List of (entry_idx, exit_idx) pairs.
+/// num_bars : int
+///     Total number of bars.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Average uniqueness per event.
 #[pyfunction]
 fn average_uniqueness(
     py: Python<'_>,
@@ -138,12 +318,41 @@ fn average_uniqueness(
 
 // ── Weights ─────────────────────────────────────────────────────────────────
 
+/// Compute balanced class weights inversely proportional to class frequency.
+///
+/// Parameters
+/// ----------
+/// labels : list[int]
+///     Label vector (e.g. [-1, 0, 1]).
+///
+/// Returns
+/// -------
+/// dict[int, float]
+///     Mapping from label value to weight.
 #[pyfunction]
 fn balanced_class_weights(py: Python<'_>, labels: Vec<i32>) -> PyResult<Py<PyAny>> {
     let result = mlfinance::sampling::weights::class_weights::balanced_class_weights(&labels);
     Ok(result.into_pyobject(py)?.into_any().unbind())
 }
 
+/// Compute return-attribution sample weights (AFML Ch. 4).
+///
+/// Weights each event proportionally to its return contribution,
+/// adjusted for concurrency.
+///
+/// Parameters
+/// ----------
+/// events : list[tuple[int, int]]
+///     List of (entry_idx, exit_idx) pairs.
+/// returns : numpy.ndarray
+///     Per-bar return series.
+/// num_bars : int
+///     Total number of bars.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Sample weights (one per event).
 #[pyfunction]
 fn return_attribution_weights(
     py: Python<'_>,
@@ -158,6 +367,23 @@ fn return_attribution_weights(
     vec_to_py_array(py, result)
 }
 
+/// Apply time-decay to sample weights (AFML Ch. 4).
+///
+/// Linearly decays weights from 1.0 (most recent) to ``oldest_weight``
+/// (least recent).
+///
+/// Parameters
+/// ----------
+/// weights : numpy.ndarray
+///     Input weights (typically from return attribution).
+/// oldest_weight : float
+///     Weight for the oldest observation. Use 0 for full linear decay,
+///     1 for no decay.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Time-decayed weights.
 #[pyfunction]
 fn time_decay(
     py: Python<'_>,

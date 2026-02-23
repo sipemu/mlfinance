@@ -7,6 +7,18 @@ use crate::types::*;
 
 // ── PurgedKFold class ───────────────────────────────────────────────────────
 
+/// Purged K-Fold cross-validation with embargo (AFML Ch. 7).
+///
+/// Prevents information leakage in time-series data by purging training
+/// observations that overlap with test events, and optionally applying
+/// an embargo period after each test set.
+///
+/// Parameters
+/// ----------
+/// n_splits : int, default 5
+///     Number of folds.
+/// embargo_pct : float, default 0.0
+///     Fraction of total observations to embargo after each test fold.
 #[pyclass(name = "PurgedKFold")]
 pub struct PyPurgedKFold {
     inner: mlfinance::modeling::cross_validation::purged_kfold::PurgedKFold,
@@ -25,6 +37,19 @@ impl PyPurgedKFold {
         }
     }
 
+    /// Generate train/test splits with purging and embargo.
+    ///
+    /// Parameters
+    /// ----------
+    /// events : list[tuple[int, int]]
+    ///     List of (entry_idx, exit_idx) pairs for each observation.
+    /// n_samples : int
+    ///     Total number of samples (must equal len(events)).
+    ///
+    /// Returns
+    /// -------
+    /// list[FoldIndices]
+    ///     Train/test index pairs for each fold.
     fn split(&self, events: Vec<(usize, usize)>, n_samples: usize) -> Vec<PyFoldIndices> {
         let folds = self.inner.split(&events, n_samples);
         folds
@@ -39,6 +64,35 @@ impl PyPurgedKFold {
 
 // ── Cross-validation scoring ────────────────────────────────────────────────
 
+/// Cross-validated scoring with purged K-fold (AFML Ch. 7).
+///
+/// Trains and evaluates a classifier on each fold, returning per-fold scores.
+/// Uses purged K-fold to prevent leakage from overlapping labels.
+///
+/// Parameters
+/// ----------
+/// classifier : object
+///     An sklearn-compatible classifier with ``.fit(X, y)`` and ``.predict(X)``.
+/// x : numpy.ndarray
+///     Feature matrix (n_samples, n_features).
+/// y : numpy.ndarray
+///     Label vector (n_samples,).
+/// events : list[tuple[int, int]]
+///     Event spans for purging.
+/// n_splits : int, default 5
+///     Number of CV folds.
+/// embargo_pct : float, default 0.0
+///     Embargo fraction.
+/// sample_weight : numpy.ndarray, optional
+///     Per-sample weights for training.
+/// scoring : callable, optional
+///     Custom scoring function ``f(y_true, y_pred) -> float``.
+///     Defaults to accuracy.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Array of per-fold scores.
 #[pyfunction]
 #[pyo3(signature = (classifier, x, y, events, n_splits=5, embargo_pct=0.0, sample_weight=None, scoring=None))]
 fn cv_score(
@@ -101,6 +155,19 @@ fn cv_score(
 
 // ── Feature importance ──────────────────────────────────────────────────────
 
+/// Mean Decrease Impurity (MDI) feature importance.
+///
+/// Averages per-tree Gini importances from a random forest.
+///
+/// Parameters
+/// ----------
+/// importances_per_tree : list[list[float]]
+///     Feature importances from each tree (n_trees x n_features).
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Mean feature importance across trees.
 #[pyfunction]
 fn mean_decrease_impurity(
     py: Python<'_>,
@@ -111,6 +178,28 @@ fn mean_decrease_impurity(
     array1_to_py(py, result)
 }
 
+/// Mean Decrease Accuracy (MDA) feature importance (AFML Ch. 8).
+///
+/// Measures each feature's importance by the drop in accuracy when
+/// the feature is permuted.
+///
+/// Parameters
+/// ----------
+/// classifier : object
+///     A fitted sklearn-compatible classifier.
+/// x : numpy.ndarray
+///     Feature matrix (n_samples, n_features).
+/// y : numpy.ndarray
+///     True labels.
+/// scoring : callable, optional
+///     Scoring function ``f(y_true, y_pred) -> float``. Defaults to accuracy.
+/// seed : int, default 42
+///     Random seed for permutation.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Importance score per feature (higher = more important).
 #[pyfunction]
 #[pyo3(signature = (classifier, x, y, scoring=None, seed=42))]
 fn mean_decrease_accuracy(
@@ -137,6 +226,30 @@ fn mean_decrease_accuracy(
     array1_to_py(py, result)
 }
 
+/// Single Feature Importance (SFI) — evaluate each feature independently (AFML Ch. 8).
+///
+/// Trains a separate model on each individual feature and reports
+/// cross-validated performance.
+///
+/// Parameters
+/// ----------
+/// classifier : object
+///     An sklearn-compatible classifier.
+/// x : numpy.ndarray
+///     Feature matrix.
+/// y : numpy.ndarray
+///     Labels.
+/// events : list[tuple[int, int]]
+///     Event spans for purged CV.
+/// n_splits : int, default 5
+///     Number of CV folds.
+/// scoring : callable, optional
+///     Custom scorer. Defaults to accuracy.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Mean CV score per feature.
 #[pyfunction]
 #[pyo3(signature = (classifier, x, y, events, n_splits=5, scoring=None))]
 fn single_feature_importance(
@@ -165,6 +278,21 @@ fn single_feature_importance(
     vec_to_py_array(py, result)
 }
 
+/// Extract orthogonal features via PCA.
+///
+/// Parameters
+/// ----------
+/// x : numpy.ndarray
+///     Feature matrix (n_samples, n_features).
+/// n_components : int
+///     Number of principal components to retain.
+///
+/// Returns
+/// -------
+/// tuple[numpy.ndarray, numpy.ndarray]
+///     (transformed, explained_variance_ratio) — the projected data of
+///     shape (n_samples, n_components) and the variance explained by
+///     each component.
 #[pyfunction]
 fn orthogonal_features(
     py: Python<'_>,
@@ -181,6 +309,21 @@ fn orthogonal_features(
     Ok((array2_to_py(py, transformed), array1_to_py(py, explained)))
 }
 
+/// Weighted Kendall tau rank correlation.
+///
+/// Parameters
+/// ----------
+/// x : numpy.ndarray
+///     First variable.
+/// y : numpy.ndarray
+///     Second variable.
+/// weights : numpy.ndarray, optional
+///     Per-observation weights.
+///
+/// Returns
+/// -------
+/// float
+///     Weighted Kendall tau coefficient in [-1, 1].
 #[pyfunction]
 #[pyo3(signature = (x, y, weights=None))]
 fn weighted_kendall_tau(
@@ -198,6 +341,27 @@ fn weighted_kendall_tau(
     )
 }
 
+/// Generate a synthetic classification dataset for testing.
+///
+/// Creates a dataset with informative, redundant, and noise features.
+///
+/// Parameters
+/// ----------
+/// n_samples : int
+///     Number of observations.
+/// n_informative : int
+///     Number of truly informative features.
+/// n_redundant : int
+///     Number of redundant (linear combinations of informative) features.
+/// n_noise : int
+///     Number of pure noise features.
+/// seed : int
+///     Random seed.
+///
+/// Returns
+/// -------
+/// tuple[numpy.ndarray, numpy.ndarray]
+///     (X, y) — feature matrix and binary labels.
 #[pyfunction]
 fn make_classification(
     py: Python<'_>,
@@ -219,6 +383,19 @@ fn make_classification(
 
 // ── Hyperparameter search ───────────────────────────────────────────────────
 
+/// Exhaustive grid search over parameter combinations.
+///
+/// Parameters
+/// ----------
+/// param_grids : list[tuple[str, list[float]]]
+///     Each entry is (parameter_name, values_to_try).
+/// score_fn : callable
+///     Function ``f(params_dict) -> float`` that evaluates a parameter set.
+///
+/// Returns
+/// -------
+/// dict
+///     ``{"best_params": {name: value, ...}, "best_score": float}``
 #[pyfunction]
 fn grid_search(
     py: Python<'_>,
@@ -257,6 +434,23 @@ fn grid_search(
     Ok(dict.into_any().unbind())
 }
 
+/// Random search over parameter distributions.
+///
+/// Parameters
+/// ----------
+/// param_distributions : list[tuple[str, float, float]]
+///     Each entry is (parameter_name, low, high) defining a uniform range.
+/// n_iter : int
+///     Number of random combinations to evaluate.
+/// score_fn : callable
+///     Function ``f(params_dict) -> float``.
+/// seed : int
+///     Random seed.
+///
+/// Returns
+/// -------
+/// dict
+///     ``{"best_params": {name: value, ...}, "best_score": float}``
 #[pyfunction]
 fn random_search(
     py: Python<'_>,
@@ -295,6 +489,23 @@ fn random_search(
     Ok(dict.into_any().unbind())
 }
 
+/// Sample from a log-uniform distribution.
+///
+/// Parameters
+/// ----------
+/// low : float
+///     Lower bound (> 0).
+/// high : float
+///     Upper bound.
+/// n : int
+///     Number of samples.
+/// seed : int
+///     Random seed.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Log-uniformly distributed samples.
 #[pyfunction]
 fn log_uniform_sample(
     py: Python<'_>,
@@ -310,6 +521,19 @@ fn log_uniform_sample(
 
 // ── Scoring functions ───────────────────────────────────────────────────────
 
+/// Binary F1 score.
+///
+/// Parameters
+/// ----------
+/// y_true : numpy.ndarray
+///     True binary labels.
+/// y_pred : numpy.ndarray
+///     Predicted binary labels.
+///
+/// Returns
+/// -------
+/// float
+///     F1 score (harmonic mean of precision and recall).
 #[pyfunction]
 fn f1_score(y_true: PyReadonlyArray1<'_, f64>, y_pred: PyReadonlyArray1<'_, f64>) -> f64 {
     let yt = py_to_vec(y_true);
@@ -317,6 +541,19 @@ fn f1_score(y_true: PyReadonlyArray1<'_, f64>, y_pred: PyReadonlyArray1<'_, f64>
     mlfinance::modeling::hyperparams::scoring::f1_score(&yt, &yp)
 }
 
+/// Negative log-loss (cross-entropy).
+///
+/// Parameters
+/// ----------
+/// y_true : numpy.ndarray
+///     True binary labels (0 or 1).
+/// y_proba : numpy.ndarray
+///     Predicted probabilities for the positive class.
+///
+/// Returns
+/// -------
+/// float
+///     Negative log-loss (higher is better).
 #[pyfunction]
 fn neg_log_loss(y_true: PyReadonlyArray1<'_, f64>, y_proba: PyReadonlyArray1<'_, f64>) -> f64 {
     let yt = py_to_vec(y_true);
@@ -324,6 +561,19 @@ fn neg_log_loss(y_true: PyReadonlyArray1<'_, f64>, y_proba: PyReadonlyArray1<'_,
     mlfinance::modeling::hyperparams::scoring::neg_log_loss(&yt, &yp)
 }
 
+/// Classification accuracy score.
+///
+/// Parameters
+/// ----------
+/// y_true : numpy.ndarray
+///     True labels.
+/// y_pred : numpy.ndarray
+///     Predicted labels.
+///
+/// Returns
+/// -------
+/// float
+///     Fraction of correct predictions.
 #[pyfunction]
 fn accuracy_score(y_true: PyReadonlyArray1<'_, f64>, y_pred: PyReadonlyArray1<'_, f64>) -> f64 {
     let yt = py_to_vec(y_true);
@@ -333,6 +583,22 @@ fn accuracy_score(y_true: PyReadonlyArray1<'_, f64>, y_pred: PyReadonlyArray1<'_
 
 // ── Ensemble ────────────────────────────────────────────────────────────────
 
+/// Theoretical accuracy of a bagging ensemble (AFML Ch. 6).
+///
+/// Computes the probability that a majority of ``n`` classifiers,
+/// each with individual accuracy ``p``, vote correctly.
+///
+/// Parameters
+/// ----------
+/// n : int
+///     Number of classifiers in the ensemble (should be odd).
+/// p : float
+///     Individual classifier accuracy (0 to 1).
+///
+/// Returns
+/// -------
+/// float
+///     Ensemble accuracy.
 #[pyfunction]
 fn bagging_accuracy(n: usize, p: f64) -> f64 {
     mlfinance::modeling::ensemble::bagging::bagging_accuracy(n, p)

@@ -13,7 +13,8 @@ use crate::types::*;
 // ── Macro for bar aggregator wrappers (single-arg threshold) ────────────────
 
 macro_rules! py_bar_aggregator_single {
-    ($py_name:ident, $py_str:literal, $rust_type:ty, $arg_name:ident, $arg_type:ty) => {
+    ($py_name:ident, $py_str:literal, $rust_type:ty, $arg_name:ident, $arg_type:ty, $doc:literal) => {
+        #[doc = $doc]
         #[pyclass(name = $py_str)]
         pub struct $py_name {
             inner: $rust_type,
@@ -28,6 +29,17 @@ macro_rules! py_bar_aggregator_single {
                 }
             }
 
+            /// Process a single tick and return a completed bar, if any.
+            ///
+            /// Parameters
+            /// ----------
+            /// tick : TickData
+            ///     A single market tick.
+            ///
+            /// Returns
+            /// -------
+            /// OhlcvBar or None
+            ///     A completed bar if the threshold was reached, otherwise None.
             fn process_tick(&mut self, tick: &PyTickData) -> Option<PyOhlcvBar> {
                 let rust_tick = to_rust_tick(tick);
                 self.inner
@@ -35,6 +47,17 @@ macro_rules! py_bar_aggregator_single {
                     .map(|b| from_rust_bar(&b))
             }
 
+            /// Process a batch of ticks and return all completed bars.
+            ///
+            /// Parameters
+            /// ----------
+            /// ticks : list[TickData]
+            ///     Sequence of market ticks.
+            ///
+            /// Returns
+            /// -------
+            /// list[OhlcvBar]
+            ///     All bars completed during the batch.
             fn process_ticks(&mut self, ticks: Vec<PyRef<'_, PyTickData>>) -> Vec<PyOhlcvBar> {
                 let rust_ticks: Vec<_> = ticks.iter().map(|t| to_rust_tick(t)).collect();
                 self.inner
@@ -50,7 +73,8 @@ macro_rules! py_bar_aggregator_single {
 // ── Macro for bar aggregator wrappers (two-arg: expected + ewma_span) ───────
 
 macro_rules! py_bar_aggregator_dual {
-    ($py_name:ident, $py_str:literal, $rust_type:ty) => {
+    ($py_name:ident, $py_str:literal, $rust_type:ty, $doc:literal) => {
+        #[doc = $doc]
         #[pyclass(name = $py_str)]
         pub struct $py_name {
             inner: $rust_type,
@@ -65,6 +89,7 @@ macro_rules! py_bar_aggregator_dual {
                 }
             }
 
+            /// Process a single tick and return a completed bar, if any.
             fn process_tick(&mut self, tick: &PyTickData) -> Option<PyOhlcvBar> {
                 let rust_tick = to_rust_tick(tick);
                 self.inner
@@ -72,6 +97,7 @@ macro_rules! py_bar_aggregator_dual {
                     .map(|b| from_rust_bar(&b))
             }
 
+            /// Process a batch of ticks and return all completed bars.
             fn process_ticks(&mut self, ticks: Vec<PyRef<'_, PyTickData>>) -> Vec<PyOhlcvBar> {
                 let rust_ticks: Vec<_> = ticks.iter().map(|t| to_rust_tick(t)).collect();
                 self.inner
@@ -91,24 +117,32 @@ py_bar_aggregator_single!(
     "TickBarAggregator",
     TickBarAggregator,
     bar_size,
-    usize
+    usize,
+    "Aggregate ticks into bars with a fixed number of ticks per bar.\n\nParameters\n----------\nbar_size : int\n    Number of ticks per bar."
 );
 py_bar_aggregator_single!(
     PyVolumeBarAggregator,
     "VolumeBarAggregator",
     VolumeBarAggregator,
     volume_threshold,
-    f64
+    f64,
+    "Aggregate ticks into bars when cumulative volume reaches a threshold.\n\nParameters\n----------\nvolume_threshold : float\n    Volume threshold per bar."
 );
 py_bar_aggregator_single!(
     PyDollarBarAggregator,
     "DollarBarAggregator",
     DollarBarAggregator,
     dollar_threshold,
-    f64
+    f64,
+    "Aggregate ticks into bars when cumulative dollar volume reaches a threshold.\n\nParameters\n----------\ndollar_threshold : float\n    Dollar volume threshold per bar."
 );
 
-// Time bars need special handling (Duration arg)
+/// Aggregate ticks into bars at fixed time intervals.
+///
+/// Parameters
+/// ----------
+/// interval_seconds : int
+///     Bar duration in seconds.
 #[pyclass(name = "TimeBarAggregator")]
 pub struct PyTimeBarAggregator {
     inner: TimeBarAggregator,
@@ -123,6 +157,7 @@ impl PyTimeBarAggregator {
         }
     }
 
+    /// Process a single tick and return a completed bar, if any.
     fn process_tick(&mut self, tick: &PyTickData) -> Option<PyOhlcvBar> {
         let rust_tick = to_rust_tick(tick);
         self.inner
@@ -130,6 +165,7 @@ impl PyTimeBarAggregator {
             .map(|b| from_rust_bar(&b))
     }
 
+    /// Process a batch of ticks and return all completed bars.
     fn process_ticks(&mut self, ticks: Vec<PyRef<'_, PyTickData>>) -> Vec<PyOhlcvBar> {
         let rust_ticks: Vec<_> = ticks.iter().map(|t| to_rust_tick(t)).collect();
         self.inner
@@ -144,38 +180,60 @@ impl PyTimeBarAggregator {
 py_bar_aggregator_dual!(
     PyTickImbalanceBarAggregator,
     "TickImbalanceBarAggregator",
-    TickImbalanceBarAggregator
+    TickImbalanceBarAggregator,
+    "Tick imbalance bars (TIB) — sample when tick direction imbalance exceeds an EWMA threshold.\n\nParameters\n----------\ninitial_expected : float\n    Initial expected imbalance.\newma_span : float\n    EWMA decay span for threshold adaptation."
 );
 py_bar_aggregator_dual!(
     PyVolumeImbalanceBarAggregator,
     "VolumeImbalanceBarAggregator",
-    VolumeImbalanceBarAggregator
+    VolumeImbalanceBarAggregator,
+    "Volume imbalance bars (VIB) — sample when signed volume imbalance exceeds an EWMA threshold.\n\nParameters\n----------\ninitial_expected : float\n    Initial expected imbalance.\newma_span : float\n    EWMA decay span for threshold adaptation."
 );
 py_bar_aggregator_dual!(
     PyDollarImbalanceBarAggregator,
     "DollarImbalanceBarAggregator",
-    DollarImbalanceBarAggregator
+    DollarImbalanceBarAggregator,
+    "Dollar imbalance bars (DIB) — sample when signed dollar volume imbalance exceeds an EWMA threshold.\n\nParameters\n----------\ninitial_expected : float\n    Initial expected imbalance.\newma_span : float\n    EWMA decay span for threshold adaptation."
 );
 
 // Runs bars
 py_bar_aggregator_dual!(
     PyTickRunsBarAggregator,
     "TickRunsBarAggregator",
-    TickRunsBarAggregator
+    TickRunsBarAggregator,
+    "Tick runs bars — sample when the longest run of same-sign ticks exceeds an EWMA threshold.\n\nParameters\n----------\ninitial_expected : float\n    Initial expected run length.\newma_span : float\n    EWMA decay span for threshold adaptation."
 );
 py_bar_aggregator_dual!(
     PyVolumeRunsBarAggregator,
     "VolumeRunsBarAggregator",
-    VolumeRunsBarAggregator
+    VolumeRunsBarAggregator,
+    "Volume runs bars — sample when volume of the dominant direction exceeds an EWMA threshold.\n\nParameters\n----------\ninitial_expected : float\n    Initial expected run volume.\newma_span : float\n    EWMA decay span for threshold adaptation."
 );
 py_bar_aggregator_dual!(
     PyDollarRunsBarAggregator,
     "DollarRunsBarAggregator",
-    DollarRunsBarAggregator
+    DollarRunsBarAggregator,
+    "Dollar runs bars — sample when dollar volume of the dominant direction exceeds an EWMA threshold.\n\nParameters\n----------\ninitial_expected : float\n    Initial expected run dollar volume.\newma_span : float\n    EWMA decay span for threshold adaptation."
 );
 
 // ── Standalone data functions ───────────────────────────────────────────────
 
+/// CUSUM event filter for detecting structural shifts (AFML Ch. 2).
+///
+/// Detects indices where the cumulative sum of deviations from the
+/// running mean exceeds a symmetric threshold.
+///
+/// Parameters
+/// ----------
+/// values : numpy.ndarray
+///     Input series (e.g. log returns or price differences).
+/// threshold : float
+///     Symmetric threshold for positive and negative CUSUM.
+///
+/// Returns
+/// -------
+/// list[int]
+///     Indices where CUSUM events are detected.
 #[pyfunction]
 fn cusum_filter(
     py: Python<'_>,
@@ -187,24 +245,84 @@ fn cusum_filter(
     vec_usize_to_list(py, indices)
 }
 
+/// Sample n evenly spaced indices in a range.
+///
+/// Parameters
+/// ----------
+/// start : int
+///     Start index (inclusive).
+/// end : int
+///     End index (exclusive).
+/// n : int
+///     Number of samples.
+///
+/// Returns
+/// -------
+/// list[int]
+///     Evenly spaced indices.
 #[pyfunction]
 fn linspace_sample(py: Python<'_>, start: usize, end: usize, n: usize) -> PyResult<Py<PyAny>> {
     let indices = mlfinance::data::sampling::event_sampling::linspace_sample(start, end, n);
     vec_usize_to_list(py, indices)
 }
 
+/// Sample n random indices from a range.
+///
+/// Parameters
+/// ----------
+/// n : int
+///     Number of samples.
+/// total : int
+///     Upper bound of the range (exclusive).
+/// seed : int
+///     Random seed for reproducibility.
+///
+/// Returns
+/// -------
+/// list[int]
+///     Randomly sampled indices (sorted, with replacement).
 #[pyfunction]
 fn uniform_sample(py: Python<'_>, n: usize, total: usize, seed: u64) -> PyResult<Py<PyAny>> {
     let indices = mlfinance::data::sampling::event_sampling::uniform_sample(n, total, seed);
     vec_usize_to_list(py, indices)
 }
 
+/// ETF trick for combining multiple product series into a single tradeable index.
+///
+/// Parameters
+/// ----------
+/// prices : list[list[float]]
+///     Per-product price series (products x time steps).
+/// weights : list[list[float]]
+///     Per-product allocation weights (products x time steps).
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Synthetic ETF price series.
 #[pyfunction]
 fn etf_trick(py: Python<'_>, prices: Vec<Vec<f64>>, weights: Vec<Vec<f64>>) -> Py<PyArray1<f64>> {
     let result = mlfinance::data::multi_product::etf_trick::etf_trick(&prices, &weights);
     vec_to_py_array(py, result)
 }
 
+/// PCA-based portfolio weights from a covariance matrix.
+///
+/// Allocates risk proportionally to principal components. Optionally
+/// targets a specific risk distribution.
+///
+/// Parameters
+/// ----------
+/// cov_matrix : numpy.ndarray
+///     Covariance matrix (n x n).
+/// risk_target : float, optional
+///     Target risk fraction for the first component. If None, uses
+///     equal risk allocation across all components.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Portfolio weights (length n, sums to 1).
 #[pyfunction]
 #[pyo3(signature = (cov_matrix, risk_target=None))]
 fn pca_weights(
@@ -220,6 +338,19 @@ fn pca_weights(
     Ok(array1_to_py(py, result))
 }
 
+/// Compute roll gaps for a single-future continuous series.
+///
+/// Parameters
+/// ----------
+/// prices : numpy.ndarray
+///     Raw futures prices.
+/// roll_dates : list[int]
+///     Indices where contract rolls occur.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Cumulative roll gap adjustments.
 #[pyfunction]
 fn roll_gaps(
     py: Python<'_>,
@@ -231,6 +362,19 @@ fn roll_gaps(
     vec_to_py_array(py, result)
 }
 
+/// Build a non-negative rolled price series by adjusting for roll gaps.
+///
+/// Parameters
+/// ----------
+/// prices : numpy.ndarray
+///     Raw futures prices.
+/// roll_dates : list[int]
+///     Indices where contract rolls occur.
+///
+/// Returns
+/// -------
+/// numpy.ndarray
+///     Adjusted non-negative price series.
 #[pyfunction]
 fn non_negative_rolled(
     py: Python<'_>,
