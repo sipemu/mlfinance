@@ -97,7 +97,7 @@ mod tests {
         let y = vec![1.0, 4.0, 2.0, 3.0];
         let tau = weighted_kendall_tau(&x, &y, None);
         // Not exactly 0 for all orderings, but should be between -1 and 1
-        assert!(tau >= -1.0 && tau <= 1.0);
+        assert!((-1.0..=1.0).contains(&tau));
     }
 
     #[test]

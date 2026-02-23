@@ -120,9 +120,9 @@ mod tests {
         // Random walk should have ADF stat close to 0 (non-rejection)
         let mut series = vec![0.0_f64; 100];
         let mut val = 0.0;
-        for i in 0..100 {
+        for (i, s) in series.iter_mut().enumerate().take(100) {
             val += (i as f64 * 0.1).sin() * 0.01;
-            series[i] = val;
+            *s = val;
         }
         let (stat, betas) = adf_test(&series, 1);
         assert!(stat.is_finite());

@@ -171,7 +171,7 @@ mod tests {
             [0.01, 0.02, -0.01],
         ];
         let pbo = probability_of_backtest_overfitting(&returns, 2, 42);
-        assert!(pbo >= 0.0 && pbo <= 1.0);
+        assert!((0.0..=1.0).contains(&pbo));
     }
 
     #[test]
@@ -201,6 +201,6 @@ mod tests {
         let returns = Array2::<f64>::ones((10, 1));
         let pbo = probability_of_backtest_overfitting(&returns, 2, 42);
         // With one strategy, it always ranks #1, so not overfit
-        assert!(pbo >= 0.0 && pbo <= 1.0);
+        assert!((0.0..=1.0).contains(&pbo));
     }
 }

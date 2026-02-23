@@ -104,6 +104,6 @@ mod tests {
     #[test]
     fn test_failure_probability_range() {
         let prob = strategy_failure_probability(0.55, 200, 0.5);
-        assert!(prob >= 0.0 && prob <= 1.0, "prob={} out of range", prob);
+        assert!((0.0..=1.0).contains(&prob), "prob={} out of range", prob);
     }
 }

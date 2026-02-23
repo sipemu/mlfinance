@@ -223,7 +223,7 @@ mod tests {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let y = vec![5.0, 3.0, 7.0, 2.0, 8.0, 1.0, 6.0, 4.0];
         let rho = spearmans_rho(&x, &y).unwrap();
-        assert!(rho >= -1.0 && rho <= 1.0);
+        assert!((-1.0..=1.0).contains(&rho));
     }
 
     #[test]

@@ -123,7 +123,7 @@ mod tests {
     #[test]
     fn test_dsr_range() {
         let dsr = deflated_sharpe_ratio(2.0, 0.5, 100, 50, -0.3, 4.0);
-        assert!(dsr >= 0.0 && dsr <= 1.0, "dsr={} out of range", dsr);
+        assert!((0.0..=1.0).contains(&dsr), "dsr={} out of range", dsr);
     }
 
     #[test]

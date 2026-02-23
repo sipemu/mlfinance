@@ -7,7 +7,7 @@ cargo fmt --check
 echo "==> cargo check --workspace"
 cargo check --workspace
 
-echo "==> cargo clippy --workspace -- -D warnings"
-cargo clippy --workspace -- -D warnings
+echo "==> cargo clippy --workspace --all-targets -- -D warnings"
+cargo clippy --workspace --all-targets -- -D warnings
 
 echo "==> All pre-commit checks passed."

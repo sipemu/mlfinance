@@ -318,7 +318,7 @@ mod tests {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let y = vec![5.0, 3.0, 7.0, 2.0, 8.0, 1.0, 6.0, 4.0];
         let nmi = mutual_information(&x, &y, Some(4), true).unwrap();
-        assert!(nmi >= 0.0 && nmi <= 1.0);
+        assert!((0.0..=1.0).contains(&nmi));
     }
 
     #[test]
@@ -373,7 +373,7 @@ mod tests {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let y = vec![5.0, 3.0, 7.0, 2.0, 8.0, 1.0, 6.0, 4.0];
         let nvi = variation_of_information(&x, &y, Some(4), true).unwrap();
-        assert!(nvi >= 0.0 && nvi <= 1.0);
+        assert!((0.0..=1.0).contains(&nvi));
     }
 
     #[test]

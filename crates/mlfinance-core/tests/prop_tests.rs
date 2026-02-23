@@ -53,7 +53,7 @@ proptest! {
         if let Ok(corr) = correlation_matrix(&data) {
             for &val in corr.iter() {
                 prop_assert!(
-                    val >= -1.0 - 1e-6 && val <= 1.0 + 1e-6,
+                    (-1.0 - 1e-6..=1.0 + 1e-6).contains(&val),
                     "Correlation {} out of [-1, 1]",
                     val
                 );

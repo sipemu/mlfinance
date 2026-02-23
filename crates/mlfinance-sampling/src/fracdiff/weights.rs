@@ -110,13 +110,8 @@ mod tests {
         // d=0 means no differentiation, only w[0]=1, rest are 0
         let w = get_weights(0.0, 5);
         assert!((w[0] - 1.0).abs() < 1e-10);
-        for i in 1..5 {
-            assert!(
-                w[i].abs() < 1e-10,
-                "w[{}] = {} should be 0 for d=0",
-                i,
-                w[i]
-            );
+        for (i, val) in w.iter().enumerate().take(5).skip(1) {
+            assert!(val.abs() < 1e-10, "w[{}] = {} should be 0 for d=0", i, val);
         }
     }
 

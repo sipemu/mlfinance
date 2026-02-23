@@ -19,10 +19,10 @@ fn sigmoid_one_class() {
 #[test]
 fn sigmoid_prob_out_of_range_clamped() {
     let s1 = sigmoid_bet_size(-0.5, 2);
-    assert!(s1 >= -1.0 && s1 <= 1.0, "Clamped for prob<0: {}", s1);
+    assert!((-1.0..=1.0).contains(&s1), "Clamped for prob<0: {}", s1);
 
     let s2 = sigmoid_bet_size(1.5, 2);
-    assert!(s2 >= -1.0 && s2 <= 1.0, "Clamped for prob>1: {}", s2);
+    assert!((-1.0..=1.0).contains(&s2), "Clamped for prob>1: {}", s2);
 }
 
 #[test]

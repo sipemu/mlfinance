@@ -423,7 +423,7 @@ mod tests {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0];
         let y = vec![5.0, 3.0, 4.0, 2.0, 1.0];
         let d = angular_distance(&x, &y).unwrap();
-        assert!(d >= 0.0 && d <= 1.0);
+        assert!((0.0..=1.0).contains(&d));
     }
 
     #[test]
@@ -465,7 +465,7 @@ mod tests {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0];
         let y = vec![5.0, 3.0, 4.0, 2.0, 1.0];
         let d = absolute_angular_distance(&x, &y).unwrap();
-        assert!(d >= 0.0 && d <= 0.5);
+        assert!((0.0..=0.5).contains(&d));
     }
 
     // ---- squared_angular_distance tests ----
@@ -501,7 +501,7 @@ mod tests {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0];
         let y = vec![5.0, 3.0, 4.0, 2.0, 1.0];
         let d = squared_angular_distance(&x, &y).unwrap();
-        assert!(d >= 0.0 && d <= 0.5);
+        assert!((0.0..=0.5).contains(&d));
     }
 
     // ---- distance_correlation tests ----
@@ -534,7 +534,7 @@ mod tests {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let y = vec![5.0, 3.0, 7.0, 2.0, 8.0, 1.0, 6.0, 4.0];
         let dc = distance_correlation(&x, &y).unwrap();
-        assert!(dc >= 0.0 && dc <= 1.0);
+        assert!((0.0..=1.0).contains(&dc));
     }
 
     #[test]

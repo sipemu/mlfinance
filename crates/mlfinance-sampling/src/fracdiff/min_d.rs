@@ -136,10 +136,10 @@ mod tests {
         // A random walk: cumulative sum of noise
         let mut series = vec![0.0; 200];
         let mut val = 100.0;
-        for i in 1..200 {
+        for (i, s) in series.iter_mut().enumerate().take(200).skip(1) {
             // Simple deterministic "random walk"
             val += ((i * 7 + 3) % 11) as f64 - 5.0;
-            series[i] = val;
+            *s = val;
         }
         let result = find_min_d(&series, 1.0, 0.1, 1e-4);
         // Should need some differentiation

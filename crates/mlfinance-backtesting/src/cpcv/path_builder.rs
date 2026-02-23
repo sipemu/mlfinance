@@ -132,7 +132,7 @@ mod tests {
 
         // Each path should cover all 4 groups
         for path in &paths {
-            let mut covered = vec![false; 4];
+            let mut covered = [false; 4];
             for &split_idx in path {
                 for &g in &splits[split_idx].test_groups {
                     assert!(!covered[g], "group {} covered twice", g);
@@ -192,7 +192,7 @@ mod tests {
 
         // Verify each path covers all groups exactly once
         for path in &paths {
-            let mut covered = vec![false; 4];
+            let mut covered = [false; 4];
             for &split_idx in path {
                 for &g in &splits[split_idx].test_groups {
                     assert!(!covered[g]);

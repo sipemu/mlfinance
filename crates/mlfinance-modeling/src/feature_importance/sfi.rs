@@ -120,7 +120,7 @@ mod tests {
 
         assert_eq!(scores.len(), n_features);
         for &s in &scores {
-            assert!(s >= 0.0 && s <= 1.0, "Score out of range: {}", s);
+            assert!((0.0..=1.0).contains(&s), "Score out of range: {}", s);
         }
     }
 }

@@ -115,7 +115,7 @@ mod tests {
         let result = vpin(&volumes, &prices, 500.0, 5);
         // Should produce some VPIN values
         for &v in &result {
-            assert!(v >= 0.0 && v <= 1.0);
+            assert!((0.0..=1.0).contains(&v));
         }
     }
 

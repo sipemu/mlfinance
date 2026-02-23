@@ -102,10 +102,19 @@ mod tests {
 
         // Count samples in each order of magnitude
         let count_below_01 = samples.iter().filter(|&&s| s < 0.01).count();
-        let count_01_1 = samples.iter().filter(|&&s| s >= 0.01 && s < 0.1).count();
-        let count_1_10 = samples.iter().filter(|&&s| s >= 0.1 && s < 1.0).count();
-        let count_10_100 = samples.iter().filter(|&&s| s >= 1.0 && s < 10.0).count();
-        let count_100_1000 = samples.iter().filter(|&&s| s >= 10.0 && s < 100.0).count();
+        let count_01_1 = samples
+            .iter()
+            .filter(|&&s| (0.01..0.1).contains(&s))
+            .count();
+        let count_1_10 = samples.iter().filter(|&&s| (0.1..1.0).contains(&s)).count();
+        let count_10_100 = samples
+            .iter()
+            .filter(|&&s| (1.0..10.0).contains(&s))
+            .count();
+        let count_100_1000 = samples
+            .iter()
+            .filter(|&&s| (10.0..100.0).contains(&s))
+            .count();
         let count_above_100 = samples.iter().filter(|&&s| s >= 100.0).count();
 
         // Each decade should have roughly similar count (total range is 6 decades)
@@ -156,7 +165,7 @@ mod tests {
 
         for _ in 0..100 {
             let s = dist.sample(&mut rng);
-            assert!(s >= 0.01 && s <= 100.0, "Sample out of range: {}", s);
+            assert!((0.01..=100.0).contains(&s), "Sample out of range: {}", s);
         }
     }
 

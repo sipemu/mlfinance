@@ -8,7 +8,7 @@ proptest! {
     fn sigmoid_bet_size_in_range(prob in 0.0f64..1.0, num_classes in 2usize..10) {
         let size = sigmoid_bet_size(prob, num_classes);
         prop_assert!(
-            size >= -1.0 - 1e-10 && size <= 1.0 + 1e-10,
+            (-1.0 - 1e-10..=1.0 + 1e-10).contains(&size),
             "Sigmoid size {} out of [-1, 1]",
             size
         );
@@ -18,7 +18,7 @@ proptest! {
     fn power_bet_size_in_range(prob in 0.0f64..1.0, num_classes in 2usize..10, exp in 0.1f64..5.0) {
         let size = power_bet_size(prob, num_classes, exp);
         prop_assert!(
-            size >= -1.0 - 1e-10 && size <= 1.0 + 1e-10,
+            (-1.0 - 1e-10..=1.0 + 1e-10).contains(&size),
             "Power size {} out of [-1, 1]",
             size
         );

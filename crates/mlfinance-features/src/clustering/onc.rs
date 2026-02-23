@@ -734,7 +734,7 @@ mod tests {
         // s(i) = (b(i) - 0) / max(0, b(i)) = 1.0 if b(i) > 0
         // Actually this would be 1.0 for well-separated singletons,
         // but the concept is unusual. Just verify it computes.
-        assert!(score >= -1.0 && score <= 1.0);
+        assert!((-1.0..=1.0).contains(&score));
     }
 
     #[test]

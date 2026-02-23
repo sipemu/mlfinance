@@ -116,7 +116,7 @@ proptest! {
             .collect();
         let uniq = average_uniqueness(&events, n_bars);
         for &u in &uniq {
-            prop_assert!(u >= 0.0 && u <= 1.0 + 1e-10, "Uniqueness {} out of range", u);
+            prop_assert!((0.0..=1.0 + 1e-10).contains(&u), "Uniqueness {} out of range", u);
         }
     }
 }

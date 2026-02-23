@@ -132,6 +132,6 @@ mod tests {
     #[test]
     fn test_psr_range() {
         let psr = probabilistic_sharpe_ratio(0.8, 0.5, 100, -0.5, 4.0);
-        assert!(psr >= 0.0 && psr <= 1.0);
+        assert!((0.0..=1.0).contains(&psr));
     }
 }

@@ -140,8 +140,8 @@ mod tests {
         for (combo, _) in &result.all_scores {
             let a = combo[0].1;
             let b = combo[1].1;
-            assert!(a >= 1.0 && a <= 5.0, "a out of range: {}", a);
-            assert!(b >= -10.0 && b <= -5.0, "b out of range: {}", b);
+            assert!((1.0..=5.0).contains(&a), "a out of range: {}", a);
+            assert!((-10.0..=-5.0).contains(&b), "b out of range: {}", b);
         }
     }
 }

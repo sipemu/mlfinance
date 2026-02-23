@@ -66,17 +66,12 @@ mod tests {
         let w = get_weights_ffd(0.5, 0.01);
         let weight_len = w.len();
         // First weight_len - 1 entries should be NaN
-        for t in 0..(weight_len - 1) {
-            assert!(
-                result[t].is_nan(),
-                "result[{}] = {} should be NaN",
-                t,
-                result[t]
-            );
+        for (t, val) in result.iter().enumerate().take(weight_len - 1) {
+            assert!(val.is_nan(), "result[{}] = {} should be NaN", t, val);
         }
         // Entries from weight_len - 1 onward should be valid
-        for t in (weight_len - 1)..result.len() {
-            assert!(!result[t].is_nan(), "result[{}] should not be NaN", t);
+        for (t, val) in result.iter().enumerate().skip(weight_len - 1) {
+            assert!(!val.is_nan(), "result[{}] should not be NaN", t);
         }
     }
 
@@ -101,12 +96,12 @@ mod tests {
         let weight_sum: f64 = w.iter().sum();
 
         // For constant c, ffd = c * sum(weights)
-        for t in (w.len() - 1)..20 {
+        for (t, val) in result.iter().enumerate().take(20).skip(w.len() - 1) {
             assert!(
-                (result[t] - 5.0 * weight_sum).abs() < 1e-10,
+                (val - 5.0 * weight_sum).abs() < 1e-10,
                 "result[{}] = {}, expected {}",
                 t,
-                result[t],
+                val,
                 5.0 * weight_sum
             );
         }
