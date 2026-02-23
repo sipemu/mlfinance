@@ -1,0 +1,18 @@
+[package]
+name = "pymlfinance"
+version = "0.1.0"
+edition = "2021"
+license = "BUSL-1.1"
+rust-version = "1.75"
+description = "Python bindings for the mlfinance AFML toolkit"
+
+[lib]
+name = "pymlfinance"
+crate-type = ["cdylib"]
+
+[dependencies]
+mlfinance = { path = "../mlfinance" }
+ndarray = { workspace = true }
+chrono = { workspace = true }
+pyo3 = { version = "0.28", features = ["extension-module"] }
+numpy = "0.28"

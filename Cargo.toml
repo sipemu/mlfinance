@@ -9,6 +9,7 @@ members = [
     "crates/mlfinance-backtesting",
     "crates/mlfinance-features",
     "crates/mlfinance",
+    "crates/pymlfinance",
 ]
 resolver = "2"
 

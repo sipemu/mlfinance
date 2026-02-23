@@ -6,3 +6,12 @@
 .vscode/
 .DS_Store
 /docs/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.egg-info/
+dist/
+.venv/
