@@ -1,6 +1,7 @@
 # mlfinance
 
 [![CI](https://github.com/sipemu/mlfinance/actions/workflows/ci.yml/badge.svg)](https://github.com/sipemu/mlfinance/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/sipemu/mlfinance/branch/main/graph/badge.svg)](https://codecov.io/gh/sipemu/mlfinance)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 Rust implementation of concepts from *Advances in Financial Machine Learning* by Marcos López de Prado.
