@@ -19,8 +19,11 @@ Rust implementation of concepts from *Advances in Financial Machine Learning* by
 | `mlfinance-modeling` | Bet sizing, cross-validation, feature importance |
 | `mlfinance-backtesting` | Backtesting and performance metrics |
 | `mlfinance` | Facade re-exporting all sub-crates |
+| `pymlfinance` | Python bindings via PyO3 (all modules) |
 
 ## Quick Start
+
+### Rust
 
 ```rust
 // Cargo.toml
@@ -33,6 +36,44 @@ cargo build
 cargo test --workspace
 cargo doc --workspace --no-deps --open
 ```
+
+### Python
+
+```sh
+cd crates/pymlfinance
+python -m venv .venv && source .venv/bin/activate
+pip install maturin numpy
+maturin develop --release
+```
+
+```python
+import numpy as np
+import pymlfinance as ml
+
+# EWMA smoothing
+prices = np.array([100.0, 101.5, 99.8, 102.3, 101.0])
+smoothed = ml.core.ewma(prices, 3)
+
+# CUSUM event filter
+events = ml.data.cusum_filter(prices, 1.5)
+
+# Triple-barrier labeling
+from pymlfinance import TripleBarrierConfig
+config = TripleBarrierConfig(upper_barrier=0.02, lower_barrier=0.02, max_holding_period=10)
+
+# Fractional differentiation
+stationary = ml.sampling.frac_diff_ffd(prices, 0.5, 1e-4)
+
+# HRP portfolio allocation
+returns = np.random.randn(100, 5) * 0.02
+weights = ml.features.hrp_weights(returns)
+
+# Sharpe ratio
+ret = np.random.randn(252) * 0.01
+sr = ml.backtesting.sharpe_ratio(ret)
+```
+
+The Python package exposes 7 submodules (`core`, `data`, `labeling`, `sampling`, `features`, `modeling`, `backtesting`) wrapping ~140 functions with zero-copy NumPy conversion. Requires Python >= 3.9.
 
 ## Examples
 
@@ -87,4 +128,5 @@ The minimum supported Rust version is **1.75**.
 
 ## License
 
-MIT License — see [LICENSE](LICENSE).
+Rust crates: MIT License — see [LICENSE](LICENSE).
+Python bindings (`pymlfinance`): BUSL-1.1.
