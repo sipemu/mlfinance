@@ -42,6 +42,16 @@ Self-contained examples covering the main workflows (see `crates/mlfinance/examp
 cargo run --example basic_pipeline          # tick bars, CUSUM filter, triple-barrier labeling
 cargo run --example portfolio_construction  # HRP, IVP, equal-weight allocation with Sharpe comparison
 cargo run --example model_evaluation        # purged k-fold CV, bet sizing, backtest statistics
+cargo run --example fracdiff                # FFD weights, expanding window, minimum-d search
+cargo run --example volatility_estimators   # Parkinson, Garman-Klass, Yang-Zhang vs daily vol
+cargo run --example sample_weights          # indicator matrix, uniqueness, sequential bootstrap, time decay
+cargo run --example structural_breaks       # ADF, SADF, GSADF, Brown-Durbin-Evans, Chu-Stinchcombe-White
+cargo run --example entropy                 # Shannon, plug-in, Lempel-Ziv, Kontoyiannis with 3 encodings
+cargo run --example microstructure          # VPIN, Amihud/Kyle lambda, Roll & Corwin-Schultz spreads
+cargo run --example denoising               # Marcenko-Pastur, RMT denoising, detoning, optimal portfolio
+cargo run --example meta_labeling           # trend scanning, meta-labels, bet sizing pipeline
+cargo run --example overfitting_detection   # PBO, CSCV, Bonferroni/Holm, PSR, deflated Sharpe
+cargo run --example strategy_risk           # SR from precision, failure probability, O-U simulation
 ```
 
 ## Benchmarks
