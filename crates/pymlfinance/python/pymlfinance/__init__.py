@@ -1,9 +1,10 @@
-# Stub package for mkdocstrings — re-exports from compiled module
-from pymlfinance.pymlfinance import *  # noqa: F401,F403
-from pymlfinance.pymlfinance import core as core  # noqa: F401
-from pymlfinance.pymlfinance import data as data  # noqa: F401
-from pymlfinance.pymlfinance import labeling as labeling  # noqa: F401
-from pymlfinance.pymlfinance import sampling as sampling  # noqa: F401
-from pymlfinance.pymlfinance import features as features  # noqa: F401
-from pymlfinance.pymlfinance import modeling as modeling  # noqa: F401
-from pymlfinance.pymlfinance import backtesting as backtesting  # noqa: F401
+import sys as _sys
+
+from pymlfinance._native import *  # noqa: F401,F403
+from pymlfinance import _native
+
+# Register submodules at expected paths for backward compat
+# e.g. `from pymlfinance.core import ewma` or `from pymlfinance import core`
+for _name in ("core", "data", "labeling", "sampling", "features", "modeling", "backtesting"):
+    _submod = getattr(_native, _name)
+    _sys.modules[f"{__name__}.{_name}"] = _submod

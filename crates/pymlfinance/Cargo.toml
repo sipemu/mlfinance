@@ -7,12 +7,19 @@ rust-version = "1.75"
 description = "Python bindings for the mlfinance AFML toolkit"
 
 [lib]
-name = "pymlfinance"
+name = "_native"
 crate-type = ["cdylib"]
 
 [dependencies]
 mlfinance = { path = "../mlfinance" }
+mlfinance-core = { workspace = true }
+mlfinance-sampling = { workspace = true }
+mlfinance-labeling = { workspace = true }
+mlfinance-features = { workspace = true }
+mlfinance-backtesting = { workspace = true }
 ndarray = { workspace = true }
 chrono = { workspace = true }
-pyo3 = { version = "0.28", features = ["extension-module"] }
-numpy = "0.28"
+serde = { version = "1.0", features = ["derive"] }
+pyo3 = { version = "0.27", features = ["extension-module"] }
+pyo3-polars = { version = "0.26", features = ["derive"] }
+numpy = "0.27"

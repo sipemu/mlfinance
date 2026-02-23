@@ -14,9 +14,14 @@ classifiers = [
     "License :: Other/Proprietary License",
 ]
 
+dependencies = ["numpy"]
+
 [project.optional-dependencies]
+polars = ["polars>=1.0"]
 docs = ["mkdocs-material", "mkdocstrings[python]"]
 
 [tool.maturin]
 manifest-path = "Cargo.toml"
 features = ["pyo3/extension-module"]
+python-source = "python"
+module-name = "pymlfinance._native"

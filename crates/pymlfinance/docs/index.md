@@ -14,7 +14,7 @@ pymlfinance provides ~140 functions and 20+ classes across 7 modules, covering:
 - **Modeling** — Purged K-fold CV, feature importance (MDI/MDA/SFI), hyperparameter search, scoring
 - **Backtesting** — Performance statistics (Sharpe, PSR, DSR), overfitting detection (PBO/CSCV), strategy risk, bet sizing, synthetic data generation
 
-All computation happens in Rust with zero-copy NumPy array interchange via PyO3.
+All computation happens in Rust with zero-copy NumPy array interchange via PyO3. A native **Polars expression plugin** is also included for use in Polars pipelines (see [Polars Integration](polars.md)).
 
 ## Quick Example
 

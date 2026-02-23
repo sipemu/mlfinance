@@ -15,8 +15,19 @@ mod modeling_mod;
 mod sampling_mod;
 mod types;
 
+// Polars expression plugin modules
+mod polars_backtesting_exprs;
+mod polars_convert;
+mod polars_core_exprs;
+mod polars_features_exprs;
+mod polars_kwargs;
+mod polars_labeling_exprs;
+mod polars_microstructure_exprs;
+mod polars_sampling_exprs;
+mod polars_volatility_exprs;
+
 #[pymodule]
-fn pymlfinance(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn _native(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Core: math, stats, matrix
     let core = PyModule::new(m.py(), "core")?;
     core_mod::register(&core)?;

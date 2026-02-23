@@ -18,6 +18,9 @@ python -m venv .venv
 source .venv/bin/activate
 pip install maturin numpy
 maturin develop --release
+
+# Optional: install Polars for the expression plugin
+pip install polars
 ```
 
 The `--release` flag enables Rust optimizations — strongly recommended for numerical workloads.
@@ -126,6 +129,23 @@ x = np.random.randn(1000)
 result = ml.core.ewma(x, span=20)  # returns np.ndarray
 assert isinstance(result, np.ndarray)
 ```
+
+## Polars Integration
+
+If you work with Polars DataFrames, pymlfinance includes a native expression plugin:
+
+```python
+import polars as pl
+import pymlfinance.polars  # registers the .ml namespace
+
+df = pl.DataFrame({"price": [100.0, 102.0, 101.0, 105.0, 103.0]})
+result = df.with_columns(
+    pl.col("price").ml.ewma(span=3).alias("ewma"),
+    pl.col("price").ml.log_returns().alias("log_ret"),
+)
+```
+
+See the [Polars Integration](polars.md) guide for the full API reference.
 
 ## Getting Help
 
