@@ -1,0 +1,108 @@
+{
+  "cases": [
+    {
+      "label": "up_then_down",
+      "returns": [
+        0.1,
+        0.05,
+        -0.1,
+        -0.05,
+        0.2
+      ],
+      "max_drawdown": 0.145,
+      "max_drawdown_duration": 2,
+      "drawdown_series": [
+        0.0,
+        0.0,
+        0.09999999999999992,
+        0.145,
+        0.0
+      ],
+      "time_under_water": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ]
+    },
+    {
+      "label": "all_positive",
+      "returns": [
+        0.01,
+        0.02,
+        0.03,
+        0.01,
+        0.02
+      ],
+      "max_drawdown": 0.0,
+      "max_drawdown_duration": 0,
+      "drawdown_series": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "time_under_water": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "all_negative",
+      "returns": [
+        -0.01,
+        -0.02,
+        -0.03,
+        -0.01,
+        -0.02
+      ],
+      "max_drawdown": 0.07772788000000008,
+      "max_drawdown_duration": 4,
+      "drawdown_series": [
+        0.0,
+        0.020000000000000042,
+        0.04940000000000012,
+        0.0589060000000001,
+        0.07772788000000008
+      ],
+      "time_under_water": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "label": "recovery",
+      "returns": [
+        -0.1,
+        -0.05,
+        0.1,
+        0.1,
+        0.05
+      ],
+      "max_drawdown": 0.050000000000000044,
+      "max_drawdown_duration": 1,
+      "drawdown_series": [
+        0.0,
+        0.050000000000000044,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "time_under_water": [
+        0,
+        1,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

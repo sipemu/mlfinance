@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "estimated_precision": 0.7,
+      "n_observations": 1000,
+      "break_even_precision": 0.5,
+      "result": 0.0
+    },
+    {
+      "estimated_precision": 0.5,
+      "n_observations": 1000,
+      "break_even_precision": 0.5,
+      "result": 0.5
+    },
+    {
+      "estimated_precision": 0.4,
+      "n_observations": 1000,
+      "break_even_precision": 0.5,
+      "result": 0.9999999998730186
+    },
+    {
+      "estimated_precision": 0.6,
+      "n_observations": 10,
+      "break_even_precision": 0.5,
+      "result": 0.26354462843276916
+    },
+    {
+      "estimated_precision": 0.6,
+      "n_observations": 1000,
+      "break_even_precision": 0.5,
+      "result": 1.269814253745949e-10
+    },
+    {
+      "estimated_precision": 0.55,
+      "n_observations": 200,
+      "break_even_precision": 0.5,
+      "result": 0.07864960352514239
+    }
+  ]
+}

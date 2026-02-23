@@ -1,0 +1,117 @@
+{
+  "cases": [
+    {
+      "type": "psr",
+      "observed_sr": 2.0,
+      "benchmark_sr": 0.0,
+      "n_observations": 252,
+      "skewness": 0.0,
+      "kurtosis": 3.0,
+      "result": 1.0
+    },
+    {
+      "type": "psr",
+      "observed_sr": 0.5,
+      "benchmark_sr": 2.0,
+      "n_observations": 252,
+      "skewness": 0.0,
+      "kurtosis": 3.0,
+      "result": 1.7449475916515607e-111
+    },
+    {
+      "type": "psr",
+      "observed_sr": 1.0,
+      "benchmark_sr": 1.0,
+      "n_observations": 252,
+      "skewness": 0.0,
+      "kurtosis": 3.0,
+      "result": 0.5
+    },
+    {
+      "type": "psr",
+      "observed_sr": 1.5,
+      "benchmark_sr": 1.0,
+      "n_observations": 100,
+      "skewness": 0.0,
+      "kurtosis": 3.0,
+      "result": 0.9996784793766523
+    },
+    {
+      "type": "psr",
+      "observed_sr": 1.5,
+      "benchmark_sr": 1.0,
+      "n_observations": 100,
+      "skewness": -1.0,
+      "kurtosis": 3.0,
+      "result": 0.9955119755930922
+    },
+    {
+      "type": "psr",
+      "observed_sr": 0.3,
+      "benchmark_sr": 0.0,
+      "n_observations": 30,
+      "skewness": 0.0,
+      "kurtosis": 0.0,
+      "result": 0.9488744529755934
+    },
+    {
+      "type": "psr",
+      "observed_sr": 0.8,
+      "benchmark_sr": 0.5,
+      "n_observations": 100,
+      "skewness": -0.5,
+      "kurtosis": 4.0,
+      "result": 0.9852599964752894
+    },
+    {
+      "type": "dsr",
+      "observed_sr": 1.0,
+      "sr_std": 1.0,
+      "n_observations": 252,
+      "n_trials": 1,
+      "skewness": 0.0,
+      "kurtosis": 3.0,
+      "result": 1.0
+    },
+    {
+      "type": "dsr",
+      "observed_sr": 1.5,
+      "sr_std": 1.0,
+      "n_observations": 252,
+      "n_trials": 5,
+      "skewness": 0.0,
+      "kurtosis": 3.0,
+      "result": 0.9995825358886729
+    },
+    {
+      "type": "dsr",
+      "observed_sr": 1.5,
+      "sr_std": 1.0,
+      "n_observations": 252,
+      "n_trials": 1000,
+      "skewness": 0.0,
+      "kurtosis": 3.0,
+      "result": 2.037049552750215e-81
+    },
+    {
+      "type": "dsr",
+      "observed_sr": 2.0,
+      "sr_std": 0.5,
+      "n_observations": 100,
+      "n_trials": 50,
+      "skewness": -0.3,
+      "kurtosis": 4.0,
+      "result": 0.9999680932897055
+    },
+    {
+      "type": "dsr",
+      "observed_sr": 5.0,
+      "sr_std": 1.0,
+      "n_observations": 1000,
+      "n_trials": 100,
+      "skewness": 0.0,
+      "kurtosis": 3.0,
+      "result": 1.0
+    }
+  ]
+}
