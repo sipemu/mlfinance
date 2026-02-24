@@ -100,8 +100,10 @@ fn main() {
     println!("  LZ complexity: {} distinct patterns", lz);
     println!("  Normalized:    {:.4}", normalized_lz);
 
-    // Compare with a fully random binary sequence
-    let random_binary: Vec<bool> = (0..returns.len()).map(|i| (i * 7 + 13) % 3 != 0).collect();
+    // Compare with a pseudo-random binary sequence (Knuth multiplicative hash)
+    let random_binary: Vec<bool> = (0..returns.len())
+        .map(|i| ((i as u32).wrapping_mul(2654435761) >> 16) & 1 == 0)
+        .collect();
     let lz_random = lempel_ziv_complexity(&random_binary);
     println!("  Pseudo-random baseline: {} patterns", lz_random);
 

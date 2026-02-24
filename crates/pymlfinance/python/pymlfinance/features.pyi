@@ -468,7 +468,7 @@ def gaussian_entropy(variance):
     """
     Gaussian entropy for a given variance.
 
-    ``H = 0.5 * log(2 * pi * e * variance)``
+    ``H = 0.5 * log2(2 * pi * e * variance)``
 
     Parameters
     ----------
@@ -478,7 +478,7 @@ def gaussian_entropy(variance):
     Returns
     -------
     float
-        Differential entropy in nats.
+        Differential entropy in bits.
     """
     ...
 
@@ -951,7 +951,7 @@ def shannon_entropy(probs):
     Returns
     -------
     float
-        Shannon entropy in nats (natural log).
+        Shannon entropy in bits (log base 2).
     """
     ...
 

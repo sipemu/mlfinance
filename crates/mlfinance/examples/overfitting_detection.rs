@@ -1,6 +1,6 @@
 //! Backtest Overfitting Detection
 //!
-//! Demonstrates Chapter 11-12 of "Advances in Financial Machine Learning":
+//! Demonstrates Chapters 11 and 14 of "Advances in Financial Machine Learning":
 //! - Probability of Backtest Overfitting (PBO)
 //! - Combinatorially Symmetric Cross-Validation (CSCV)
 //! - Bonferroni and Holm multiple testing corrections

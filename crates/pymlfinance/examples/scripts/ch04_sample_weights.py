@@ -50,7 +50,7 @@ print(f"  (1.0 = fully unique, lower = more overlap)")
 # --- Indicator Matrix ---
 ind_matrix = pymlfinance.sampling.get_indicator_matrix(events, n_bars)
 print(f"\n--- Indicator Matrix ---")
-print(f"  Shape: {ind_matrix.shape}  (events x bars)")
+print(f"  Shape: {ind_matrix.shape}  (bars x events)")
 print(f"  Non-zero entries: {np.sum(ind_matrix > 0)}")
 print(f"  Sparsity: {1 - np.sum(ind_matrix > 0) / ind_matrix.size:.2%}")
 

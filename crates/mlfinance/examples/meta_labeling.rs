@@ -1,6 +1,6 @@
 //! Meta-Labeling & Trend Scanning
 //!
-//! Demonstrates Chapter 3 and Chapter 5 of "Advances in Financial Machine Learning":
+//! Demonstrates Chapter 3 of "Advances in Financial Machine Learning":
 //! - Trend scanning for label generation
 //! - Meta-labeling: learning when the primary model is correct
 //! - Bet sizing from meta-label probabilities

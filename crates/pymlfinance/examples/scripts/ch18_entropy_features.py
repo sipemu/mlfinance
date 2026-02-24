@@ -67,9 +67,9 @@ h_peaked = pymlfinance.features.shannon_entropy(peaked_probs)
 # Binary
 binary_probs = np.array([0.5, 0.5])
 h_binary = pymlfinance.features.shannon_entropy(binary_probs)
-print(f"  Uniform (10 symbols): {h_uniform:.4f} nats (max entropy)")
-print(f"  Peaked (10 symbols):  {h_peaked:.4f} nats (low entropy)")
-print(f"  Binary (50/50):       {h_binary:.4f} nats")
+print(f"  Uniform (10 symbols): {h_uniform:.4f} bits (max entropy)")
+print(f"  Peaked (10 symbols):  {h_peaked:.4f} bits (low entropy)")
+print(f"  Binary (50/50):       {h_binary:.4f} bits")
 
 # --- Plugin Entropy ---
 print(f"\n--- Plugin Entropy (from encoded sequences) ---")

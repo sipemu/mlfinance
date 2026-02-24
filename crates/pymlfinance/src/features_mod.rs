@@ -319,7 +319,7 @@ fn sigma_encode(
 /// Returns
 /// -------
 /// float
-///     Shannon entropy in nats (natural log).
+///     Shannon entropy in bits (log base 2).
 #[pyfunction]
 fn shannon_entropy(probs: PyReadonlyArray1<'_, f64>) -> f64 {
     let p = py_to_vec(probs);
@@ -388,7 +388,7 @@ fn kontoyiannis_entropy(sequence: Vec<usize>, window: usize) -> f64 {
 
 /// Gaussian entropy for a given variance.
 ///
-/// ``H = 0.5 * log(2 * pi * e * variance)``
+/// ``H = 0.5 * log2(2 * pi * e * variance)``
 ///
 /// Parameters
 /// ----------
@@ -398,7 +398,7 @@ fn kontoyiannis_entropy(sequence: Vec<usize>, window: usize) -> f64 {
 /// Returns
 /// -------
 /// float
-///     Differential entropy in nats.
+///     Differential entropy in bits.
 #[pyfunction]
 fn gaussian_entropy(variance: f64) -> f64 {
     mlfinance::features::entropy::gaussian_entropy::gaussian_entropy(variance)

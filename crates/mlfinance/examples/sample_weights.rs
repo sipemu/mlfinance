@@ -45,7 +45,7 @@ fn main() {
     println!("\n--- Indicator Matrix ---");
     let ind_matrix = get_indicator_matrix(&events, num_bars);
     println!(
-        "  Shape: {} events x {} bars",
+        "  Shape: {} bars x {} events",
         ind_matrix.nrows(),
         ind_matrix.ncols()
     );

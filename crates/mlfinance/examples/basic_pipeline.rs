@@ -35,9 +35,9 @@ fn main() {
 
     // Step 3: Extract close prices and apply CUSUM filter
     let prices: Vec<f64> = bars.iter().map(|b| b.close).collect();
-    let cusum_events = cusum_filter(&prices, 1.5);
+    let cusum_events = cusum_filter(&prices, 15.0);
     println!(
-        "\nCUSUM filter (threshold=1.5): detected {} events",
+        "\nCUSUM filter (threshold=15.0): detected {} events",
         cusum_events.len()
     );
     if cusum_events.len() > 3 {

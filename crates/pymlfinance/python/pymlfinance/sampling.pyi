@@ -46,7 +46,7 @@ def compare_bootstraps(ind_matrix, num_samples, num_trials, seed):
     Parameters
     ----------
     ind_matrix : numpy.ndarray
-        Indicator matrix (n_events x n_bars).
+        Indicator matrix (num_bars x n_events).
     num_samples : int
         Samples per trial.
     num_trials : int
@@ -146,8 +146,8 @@ def get_indicator_matrix(events, num_bars):
     Returns
     -------
     numpy.ndarray
-        Binary matrix of shape (n_events, num_bars) where entry (i, j) = 1
-        if event i is active at bar j.
+        Binary matrix of shape (num_bars, n_events) where entry (t, i) = 1
+        if event i is active at bar t.
     """
     ...
 
@@ -243,7 +243,7 @@ def seq_bootstrap(ind_matrix, num_samples, seed):
     Parameters
     ----------
     ind_matrix : numpy.ndarray
-        Indicator matrix (n_events x n_bars) from ``get_indicator_matrix``.
+        Indicator matrix (num_bars x n_events) from ``get_indicator_matrix``.
     num_samples : int
         Number of samples to draw.
     seed : int

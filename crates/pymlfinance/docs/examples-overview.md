@@ -16,7 +16,7 @@ Inspired by the [BlackArbsCEO AFML Exercises](https://github.com/BlackArbsCEO/Ad
 | [Ch 7](examples/ch07_cross_validation.ipynb) | Cross-Validation | — |
 | [Ch 8](examples/ch08_feature_importance.ipynb) | Feature Importance | — |
 | [Ch 10](examples/ch10_bet_sizing.ipynb) | Bet Sizing | `.ml.sigmoid_bet_size()`, `.ml.power_bet_size()` |
-| [Ch 11+12](examples/ch11_backtesting_dangers.ipynb) | Backtesting Dangers | — |
+| [Ch 11-12](examples/ch11_backtesting_dangers.ipynb) | Backtesting Dangers | — |
 | [Ch 13](examples/ch13_synthetic_data.ipynb) | Synthetic Data | — |
 | [Ch 14](examples/ch14_backtest_statistics.ipynb) | Backtest Statistics | `.ml.sharpe_ratio()`, `.ml.hit_ratio()`, `.ml.compute_drawdowns()` |
 | [Ch 17](examples/ch17_structural_breaks.ipynb) | Structural Breaks | `.ml.adf_test()`, `.ml.sadf()` |
