@@ -28,6 +28,7 @@ classifiers = [
     "Topic :: Office/Business :: Financial",
     "Topic :: Scientific/Engineering",
 ]
+readme = "README.md"
 dependencies = ["numpy"]
 
 [project.urls]
