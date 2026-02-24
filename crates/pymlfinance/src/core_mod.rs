@@ -351,20 +351,23 @@ fn matrix_inverse(
 }
 
 pub fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(ewma, m)?)?;
-    m.add_function(wrap_pyfunction!(ewma_std, m)?)?;
-    m.add_function(wrap_pyfunction!(cumsum, m)?)?;
-    m.add_function(wrap_pyfunction!(log_returns, m)?)?;
-    m.add_function(wrap_pyfunction!(simple_returns, m)?)?;
-    m.add_function(wrap_pyfunction!(mean, m)?)?;
-    m.add_function(wrap_pyfunction!(variance, m)?)?;
-    m.add_function(wrap_pyfunction!(std_dev, m)?)?;
-    m.add_function(wrap_pyfunction!(skewness, m)?)?;
-    m.add_function(wrap_pyfunction!(kurtosis, m)?)?;
-    m.add_function(wrap_pyfunction!(weighted_mean, m)?)?;
-    m.add_function(wrap_pyfunction!(correlation_matrix, m)?)?;
-    m.add_function(wrap_pyfunction!(covariance_matrix, m)?)?;
-    m.add_function(wrap_pyfunction!(power_iteration_eig, m)?)?;
-    m.add_function(wrap_pyfunction!(matrix_inverse, m)?)?;
+    register_functions!(
+        m,
+        ewma,
+        ewma_std,
+        cumsum,
+        log_returns,
+        simple_returns,
+        mean,
+        variance,
+        std_dev,
+        skewness,
+        kurtosis,
+        weighted_mean,
+        correlation_matrix,
+        covariance_matrix,
+        power_iteration_eig,
+        matrix_inverse,
+    );
     Ok(())
 }

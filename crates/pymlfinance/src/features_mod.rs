@@ -1546,67 +1546,88 @@ fn gnpr_distance(
 
 pub fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Structural breaks
-    m.add_function(wrap_pyfunction!(adf_test, m)?)?;
-    m.add_function(wrap_pyfunction!(sadf, m)?)?;
-    m.add_function(wrap_pyfunction!(sadf_stat, m)?)?;
-    m.add_function(wrap_pyfunction!(gsadf, m)?)?;
-    m.add_function(wrap_pyfunction!(gsadf_stat, m)?)?;
-    m.add_function(wrap_pyfunction!(brown_durbin_evans, m)?)?;
-    m.add_function(wrap_pyfunction!(chu_stinchcombe_white, m)?)?;
-    m.add_function(wrap_pyfunction!(sm_poly, m)?)?;
-    m.add_function(wrap_pyfunction!(sm_exp, m)?)?;
-    m.add_function(wrap_pyfunction!(sm_power, m)?)?;
+    register_functions!(
+        m,
+        adf_test,
+        sadf,
+        sadf_stat,
+        gsadf,
+        gsadf_stat,
+        brown_durbin_evans,
+        chu_stinchcombe_white,
+        sm_poly,
+        sm_exp,
+        sm_power,
+    );
     // Entropy
-    m.add_function(wrap_pyfunction!(binary_encode, m)?)?;
-    m.add_function(wrap_pyfunction!(quantile_encode, m)?)?;
-    m.add_function(wrap_pyfunction!(sigma_encode, m)?)?;
-    m.add_function(wrap_pyfunction!(shannon_entropy, m)?)?;
-    m.add_function(wrap_pyfunction!(plugin_entropy, m)?)?;
-    m.add_function(wrap_pyfunction!(lempel_ziv_complexity, m)?)?;
-    m.add_function(wrap_pyfunction!(kontoyiannis_entropy, m)?)?;
-    m.add_function(wrap_pyfunction!(gaussian_entropy, m)?)?;
-    m.add_function(wrap_pyfunction!(entropy_implied_vol, m)?)?;
+    register_functions!(
+        m,
+        binary_encode,
+        quantile_encode,
+        sigma_encode,
+        shannon_entropy,
+        plugin_entropy,
+        lempel_ziv_complexity,
+        kontoyiannis_entropy,
+        gaussian_entropy,
+        entropy_implied_vol,
+    );
     // Microstructure
-    m.add_function(wrap_pyfunction!(amihud_lambda, m)?)?;
-    m.add_function(wrap_pyfunction!(amihud_lambda_rolling, m)?)?;
-    m.add_function(wrap_pyfunction!(kyle_lambda, m)?)?;
-    m.add_function(wrap_pyfunction!(hasbrouck_lambda, m)?)?;
-    m.add_function(wrap_pyfunction!(roll_spread, m)?)?;
-    m.add_function(wrap_pyfunction!(roll_spread_rolling, m)?)?;
-    m.add_function(wrap_pyfunction!(corwin_schultz_spread, m)?)?;
-    m.add_function(wrap_pyfunction!(vpin, m)?)?;
-    m.add_function(wrap_pyfunction!(tick_rule_classify, m)?)?;
+    register_functions!(
+        m,
+        amihud_lambda,
+        amihud_lambda_rolling,
+        kyle_lambda,
+        hasbrouck_lambda,
+        roll_spread,
+        roll_spread_rolling,
+        corwin_schultz_spread,
+        vpin,
+        tick_rule_classify,
+    );
     // Denoising
-    m.add_function(wrap_pyfunction!(cov_to_corr, m)?)?;
-    m.add_function(wrap_pyfunction!(corr_to_cov, m)?)?;
-    m.add_function(wrap_pyfunction!(marcenko_pastur_pdf, m)?)?;
-    m.add_function(wrap_pyfunction!(fit_kde, m)?)?;
-    m.add_function(wrap_pyfunction!(denoise_corr, m)?)?;
-    m.add_function(wrap_pyfunction!(denoise_cov, m)?)?;
-    m.add_function(wrap_pyfunction!(detone_corr, m)?)?;
-    m.add_function(wrap_pyfunction!(optimal_portfolio, m)?)?;
+    register_functions!(
+        m,
+        cov_to_corr,
+        corr_to_cov,
+        marcenko_pastur_pdf,
+        fit_kde,
+        denoise_corr,
+        denoise_cov,
+        detone_corr,
+        optimal_portfolio,
+    );
     // Allocation
-    m.add_function(wrap_pyfunction!(hrp_weights, m)?)?;
-    m.add_function(wrap_pyfunction!(cla_min_variance, m)?)?;
-    m.add_function(wrap_pyfunction!(cla_max_sharpe, m)?)?;
-    m.add_function(wrap_pyfunction!(inverse_variance_weights, m)?)?;
-    m.add_function(wrap_pyfunction!(compare_allocations, m)?)?;
+    register_functions!(
+        m,
+        hrp_weights,
+        cla_min_variance,
+        cla_max_sharpe,
+        inverse_variance_weights,
+        compare_allocations,
+    );
     // Clustering
-    m.add_function(wrap_pyfunction!(kmeans, m)?)?;
-    m.add_function(wrap_pyfunction!(silhouette_score, m)?)?;
-    m.add_function(wrap_pyfunction!(cluster_kmeans_base, m)?)?;
-    m.add_function(wrap_pyfunction!(cluster_kmeans_top, m)?)?;
-    m.add_function(wrap_pyfunction!(get_feature_clusters, m)?)?;
+    register_functions!(
+        m,
+        kmeans,
+        silhouette_score,
+        cluster_kmeans_base,
+        cluster_kmeans_top,
+        get_feature_clusters,
+    );
     // Codependence
-    m.add_function(wrap_pyfunction!(dependence_matrix, m)?)?;
-    m.add_function(wrap_pyfunction!(distance_matrix, m)?)?;
-    m.add_function(wrap_pyfunction!(spearmans_rho, m)?)?;
-    m.add_function(wrap_pyfunction!(distance_correlation, m)?)?;
-    m.add_function(wrap_pyfunction!(mutual_information, m)?)?;
-    m.add_function(wrap_pyfunction!(variation_of_information, m)?)?;
-    m.add_function(wrap_pyfunction!(optimal_transport_dependence, m)?)?;
-    m.add_function(wrap_pyfunction!(angular_distance, m)?)?;
-    m.add_function(wrap_pyfunction!(gpr_distance, m)?)?;
-    m.add_function(wrap_pyfunction!(gnpr_distance, m)?)?;
+    register_functions!(
+        m,
+        dependence_matrix,
+        distance_matrix,
+        spearmans_rho,
+        distance_correlation,
+        mutual_information,
+        variation_of_information,
+        optimal_transport_dependence,
+        angular_distance,
+        gpr_distance,
+        gnpr_distance,
+    );
     Ok(())
 }

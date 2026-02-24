@@ -421,17 +421,20 @@ fn py_bars_to_rust(bars: &[PyRef<'_, PyOhlcvBar>]) -> Vec<mlfinance::core::Ohlcv
 }
 
 pub fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(get_events, m)?)?;
-    m.add_function(wrap_pyfunction!(get_bins, m)?)?;
-    m.add_function(wrap_pyfunction!(get_meta_bins, m)?)?;
-    m.add_function(wrap_pyfunction!(drop_rare_labels, m)?)?;
-    m.add_function(wrap_pyfunction!(daily_volatility, m)?)?;
-    m.add_function(wrap_pyfunction!(parkinson_volatility, m)?)?;
-    m.add_function(wrap_pyfunction!(garman_klass_volatility, m)?)?;
-    m.add_function(wrap_pyfunction!(yang_zhang_volatility, m)?)?;
-    m.add_function(wrap_pyfunction!(trend_scanning_labels, m)?)?;
-    m.add_function(wrap_pyfunction!(trend_scanning_label_series, m)?)?;
-    m.add_function(wrap_pyfunction!(add_vertical_barrier, m)?)?;
-    m.add_class::<PyMetaLabeler>()?;
+    register_functions!(
+        m,
+        get_events,
+        get_bins,
+        get_meta_bins,
+        drop_rare_labels,
+        daily_volatility,
+        parkinson_volatility,
+        garman_klass_volatility,
+        yang_zhang_volatility,
+        trend_scanning_labels,
+        trend_scanning_label_series,
+        add_vertical_barrier,
+    );
+    register_classes!(m, PyMetaLabeler);
     Ok(())
 }

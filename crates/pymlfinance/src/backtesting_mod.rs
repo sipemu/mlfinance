@@ -646,34 +646,43 @@ fn sharpe_mesh(py: Python<'_>, returns_grid: PyReadonlyArray2<'_, f64>) -> Py<Py
 
 pub fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Statistics
-    m.add_function(wrap_pyfunction!(sharpe_ratio, m)?)?;
-    m.add_function(wrap_pyfunction!(probabilistic_sharpe_ratio, m)?)?;
-    m.add_function(wrap_pyfunction!(deflated_sharpe_ratio, m)?)?;
-    m.add_function(wrap_pyfunction!(compute_drawdowns, m)?)?;
-    m.add_function(wrap_pyfunction!(hhi, m)?)?;
-    m.add_function(wrap_pyfunction!(hhi_concentration, m)?)?;
-    m.add_function(wrap_pyfunction!(hit_ratio, m)?)?;
-    m.add_function(wrap_pyfunction!(avg_holding_period, m)?)?;
-    m.add_function(wrap_pyfunction!(turnover, m)?)?;
+    register_functions!(
+        m,
+        sharpe_ratio,
+        probabilistic_sharpe_ratio,
+        deflated_sharpe_ratio,
+        compute_drawdowns,
+        hhi,
+        hhi_concentration,
+        hit_ratio,
+        avg_holding_period,
+        turnover,
+    );
     // Overfitting
-    m.add_function(wrap_pyfunction!(probability_of_backtest_overfitting, m)?)?;
-    m.add_function(wrap_pyfunction!(cscv, m)?)?;
-    m.add_function(wrap_pyfunction!(bonferroni_correction, m)?)?;
-    m.add_function(wrap_pyfunction!(holm_correction, m)?)?;
+    register_functions!(
+        m,
+        probability_of_backtest_overfitting,
+        cscv,
+        bonferroni_correction,
+        holm_correction,
+    );
     // Strategy risk
-    m.add_function(wrap_pyfunction!(sr_from_precision, m)?)?;
-    m.add_function(wrap_pyfunction!(implied_precision, m)?)?;
-    m.add_function(wrap_pyfunction!(implied_frequency, m)?)?;
-    m.add_function(wrap_pyfunction!(strategy_failure_probability, m)?)?;
+    register_functions!(
+        m,
+        sr_from_precision,
+        implied_precision,
+        implied_frequency,
+        strategy_failure_probability,
+    );
     // Bet sizing
-    m.add_function(wrap_pyfunction!(sigmoid_bet_size, m)?)?;
-    m.add_function(wrap_pyfunction!(power_bet_size, m)?)?;
-    m.add_function(wrap_pyfunction!(discrete_signal, m)?)?;
-    m.add_function(wrap_pyfunction!(avg_active_signals, m)?)?;
+    register_functions!(
+        m,
+        sigmoid_bet_size,
+        power_bet_size,
+        discrete_signal,
+        avg_active_signals,
+    );
     // Synthetic
-    m.add_function(wrap_pyfunction!(simulate_ou, m)?)?;
-    m.add_function(wrap_pyfunction!(estimate_ou_params, m)?)?;
-    m.add_function(wrap_pyfunction!(otr_mesh, m)?)?;
-    m.add_function(wrap_pyfunction!(sharpe_mesh, m)?)?;
+    register_functions!(m, simulate_ou, estimate_ou_params, otr_mesh, sharpe_mesh,);
     Ok(())
 }

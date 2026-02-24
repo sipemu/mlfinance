@@ -639,20 +639,23 @@ fn make_scoring_fn(
 }
 
 pub fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<PyPurgedKFold>()?;
-    m.add_function(wrap_pyfunction!(cv_score, m)?)?;
-    m.add_function(wrap_pyfunction!(mean_decrease_impurity, m)?)?;
-    m.add_function(wrap_pyfunction!(mean_decrease_accuracy, m)?)?;
-    m.add_function(wrap_pyfunction!(single_feature_importance, m)?)?;
-    m.add_function(wrap_pyfunction!(orthogonal_features, m)?)?;
-    m.add_function(wrap_pyfunction!(weighted_kendall_tau, m)?)?;
-    m.add_function(wrap_pyfunction!(make_classification, m)?)?;
-    m.add_function(wrap_pyfunction!(grid_search, m)?)?;
-    m.add_function(wrap_pyfunction!(random_search, m)?)?;
-    m.add_function(wrap_pyfunction!(log_uniform_sample, m)?)?;
-    m.add_function(wrap_pyfunction!(f1_score, m)?)?;
-    m.add_function(wrap_pyfunction!(neg_log_loss, m)?)?;
-    m.add_function(wrap_pyfunction!(accuracy_score, m)?)?;
-    m.add_function(wrap_pyfunction!(bagging_accuracy, m)?)?;
+    register_classes!(m, PyPurgedKFold);
+    register_functions!(
+        m,
+        cv_score,
+        mean_decrease_impurity,
+        mean_decrease_accuracy,
+        single_feature_importance,
+        orthogonal_features,
+        weighted_kendall_tau,
+        make_classification,
+        grid_search,
+        random_search,
+        log_uniform_sample,
+        f1_score,
+        neg_log_loss,
+        accuracy_score,
+        bagging_accuracy,
+    );
     Ok(())
 }

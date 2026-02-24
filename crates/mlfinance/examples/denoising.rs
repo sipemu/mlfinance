@@ -8,6 +8,7 @@
 //!
 //! Run with: `cargo run -p mlfinance --example denoising`
 
+use mlfinance::core::stats::{correlation_matrix, covariance_matrix};
 use mlfinance::features::denoising::{
     denoise_corr, detone_corr, marcenko_pastur_pdf, optimal_portfolio,
 };
@@ -159,36 +160,9 @@ fn generate_noisy_corr(n: usize, t: usize) -> (Array2<f64>, Array2<f64>) {
         }
     }
 
-    // Compute sample covariance and correlation
-    let means: Vec<f64> = (0..n)
-        .map(|j| (0..t).map(|i| data[[i, j]]).sum::<f64>() / t as f64)
-        .collect();
-
-    let mut cov = Array2::zeros((n, n));
-    for i in 0..n {
-        for j in 0..n {
-            let c: f64 = (0..t)
-                .map(|k| (data[[k, i]] - means[i]) * (data[[k, j]] - means[j]))
-                .sum::<f64>()
-                / (t - 1) as f64;
-            cov[[i, j]] = c;
-        }
-    }
-
-    let mut corr = Array2::zeros((n, n));
-    for i in 0..n {
-        for j in 0..n {
-            let std_i = cov[[i, i]].sqrt();
-            let std_j = cov[[j, j]].sqrt();
-            corr[[i, j]] = if std_i > 0.0 && std_j > 0.0 {
-                cov[[i, j]] / (std_i * std_j)
-            } else if i == j {
-                1.0
-            } else {
-                0.0
-            };
-        }
-    }
+    // Compute sample covariance and correlation using library functions
+    let cov = covariance_matrix(&data).expect("Covariance computation failed");
+    let corr = correlation_matrix(&data).expect("Correlation computation failed");
 
     (corr, cov)
 }

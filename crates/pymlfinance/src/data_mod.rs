@@ -388,22 +388,28 @@ fn non_negative_rolled(
 }
 
 pub fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<PyTickBarAggregator>()?;
-    m.add_class::<PyVolumeBarAggregator>()?;
-    m.add_class::<PyDollarBarAggregator>()?;
-    m.add_class::<PyTimeBarAggregator>()?;
-    m.add_class::<PyTickImbalanceBarAggregator>()?;
-    m.add_class::<PyVolumeImbalanceBarAggregator>()?;
-    m.add_class::<PyDollarImbalanceBarAggregator>()?;
-    m.add_class::<PyTickRunsBarAggregator>()?;
-    m.add_class::<PyVolumeRunsBarAggregator>()?;
-    m.add_class::<PyDollarRunsBarAggregator>()?;
-    m.add_function(wrap_pyfunction!(cusum_filter, m)?)?;
-    m.add_function(wrap_pyfunction!(linspace_sample, m)?)?;
-    m.add_function(wrap_pyfunction!(uniform_sample, m)?)?;
-    m.add_function(wrap_pyfunction!(etf_trick, m)?)?;
-    m.add_function(wrap_pyfunction!(pca_weights, m)?)?;
-    m.add_function(wrap_pyfunction!(roll_gaps, m)?)?;
-    m.add_function(wrap_pyfunction!(non_negative_rolled, m)?)?;
+    register_classes!(
+        m,
+        PyTickBarAggregator,
+        PyVolumeBarAggregator,
+        PyDollarBarAggregator,
+        PyTimeBarAggregator,
+        PyTickImbalanceBarAggregator,
+        PyVolumeImbalanceBarAggregator,
+        PyDollarImbalanceBarAggregator,
+        PyTickRunsBarAggregator,
+        PyVolumeRunsBarAggregator,
+        PyDollarRunsBarAggregator,
+    );
+    register_functions!(
+        m,
+        cusum_filter,
+        linspace_sample,
+        uniform_sample,
+        etf_trick,
+        pca_weights,
+        roll_gaps,
+        non_negative_rolled,
+    );
     Ok(())
 }

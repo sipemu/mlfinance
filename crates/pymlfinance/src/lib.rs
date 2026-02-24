@@ -4,6 +4,24 @@
 use pyo3::prelude::*;
 use pyo3::types::PyModule;
 
+/// Register multiple `#[pyfunction]`s on a module in one call.
+macro_rules! register_functions {
+    ($m:expr, $($func:ident),* $(,)?) => {
+        $(
+            $m.add_function(pyo3::wrap_pyfunction!($func, $m)?)?;
+        )*
+    };
+}
+
+/// Register multiple `#[pyclass]` types on a module in one call.
+macro_rules! register_classes {
+    ($m:expr, $($class:ty),* $(,)?) => {
+        $(
+            $m.add_class::<$class>()?;
+        )*
+    };
+}
+
 mod backtesting_mod;
 mod classifier;
 mod convert;
@@ -64,18 +82,21 @@ fn _native(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_submodule(&backtesting)?;
 
     // Register shared types at the root level too
-    m.add_class::<types::PyTickData>()?;
-    m.add_class::<types::PyOhlcvBar>()?;
-    m.add_class::<types::PyTripleBarrierConfig>()?;
-    m.add_class::<types::PyEvent>()?;
-    m.add_class::<types::PyTrendScanResult>()?;
-    m.add_class::<types::PyDrawdownResult>()?;
-    m.add_class::<types::PyCscvResult>()?;
-    m.add_class::<types::PyKMeansResult>()?;
-    m.add_class::<types::PyOncResult>()?;
-    m.add_class::<types::PyAllocationComparison>()?;
-    m.add_class::<types::PyBootstrapComparison>()?;
-    m.add_class::<types::PyFoldIndices>()?;
+    register_classes!(
+        m,
+        types::PyTickData,
+        types::PyOhlcvBar,
+        types::PyTripleBarrierConfig,
+        types::PyEvent,
+        types::PyTrendScanResult,
+        types::PyDrawdownResult,
+        types::PyCscvResult,
+        types::PyKMeansResult,
+        types::PyOncResult,
+        types::PyAllocationComparison,
+        types::PyBootstrapComparison,
+        types::PyFoldIndices,
+    );
 
     Ok(())
 }

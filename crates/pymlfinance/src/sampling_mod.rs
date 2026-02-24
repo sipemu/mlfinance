@@ -396,19 +396,25 @@ fn time_decay(
 }
 
 pub fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(get_weights, m)?)?;
-    m.add_function(wrap_pyfunction!(get_weights_ffd, m)?)?;
-    m.add_function(wrap_pyfunction!(frac_diff_ffd, m)?)?;
-    m.add_function(wrap_pyfunction!(frac_diff_expanding, m)?)?;
-    m.add_function(wrap_pyfunction!(find_min_d, m)?)?;
-    m.add_function(wrap_pyfunction!(standard_bootstrap, m)?)?;
-    m.add_function(wrap_pyfunction!(seq_bootstrap, m)?)?;
-    m.add_function(wrap_pyfunction!(compare_bootstraps, m)?)?;
-    m.add_function(wrap_pyfunction!(num_co_events, m)?)?;
-    m.add_function(wrap_pyfunction!(get_indicator_matrix, m)?)?;
-    m.add_function(wrap_pyfunction!(average_uniqueness, m)?)?;
-    m.add_function(wrap_pyfunction!(balanced_class_weights, m)?)?;
-    m.add_function(wrap_pyfunction!(return_attribution_weights, m)?)?;
-    m.add_function(wrap_pyfunction!(time_decay, m)?)?;
+    // Fractional differentiation
+    register_functions!(
+        m,
+        get_weights,
+        get_weights_ffd,
+        frac_diff_ffd,
+        frac_diff_expanding,
+        find_min_d,
+    );
+    // Bootstrap
+    register_functions!(m, standard_bootstrap, seq_bootstrap, compare_bootstraps,);
+    // Concurrency
+    register_functions!(m, num_co_events, get_indicator_matrix, average_uniqueness,);
+    // Weights
+    register_functions!(
+        m,
+        balanced_class_weights,
+        return_attribution_weights,
+        time_decay,
+    );
     Ok(())
 }
