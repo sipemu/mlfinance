@@ -3,6 +3,7 @@
 [![CI](https://github.com/sipemu/mlfinance/actions/workflows/ci.yml/badge.svg)](https://github.com/sipemu/mlfinance/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/sipemu/mlfinance/branch/main/graph/badge.svg)](https://codecov.io/gh/sipemu/mlfinance)
 [![BUSL-1.1 licensed](https://img.shields.io/badge/license-BUSL--1.1-blue.svg)](./LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/pymlfinance)](https://pypi.org/project/pymlfinance/)
 ![Status: Experimental](https://img.shields.io/badge/status-experimental-orange)
 
 Rust implementation of concepts from *Advances in Financial Machine Learning* by Marcos López de Prado.
