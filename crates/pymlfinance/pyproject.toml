@@ -28,14 +28,13 @@ classifiers = [
     "Topic :: Office/Business :: Financial",
     "Topic :: Scientific/Engineering",
 ]
+dependencies = ["numpy"]
 
 [project.urls]
 Homepage = "https://github.com/sipemu/mlfinance"
 Documentation = "https://sipemu.github.io/mlfinance/"
 Repository = "https://github.com/sipemu/mlfinance.git"
 "Issue Tracker" = "https://github.com/sipemu/mlfinance/issues"
-
-dependencies = ["numpy"]
 
 [project.optional-dependencies]
 polars = ["polars>=1.0"]
