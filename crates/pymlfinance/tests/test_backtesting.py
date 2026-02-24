@@ -11,16 +11,22 @@ class TestStatistics:
         assert isinstance(result, float)
 
     def test_probabilistic_sharpe_ratio(self, returns_series):
-        # probabilistic_sharpe_ratio(observed_sr, benchmark_sr, n_observations, skewness, kurtosis)
-        sr = backtesting.sharpe_ratio(returns_series)
-        result = backtesting.probabilistic_sharpe_ratio(sr, 0.0, len(returns_series), 0.0, 3.0)
+        # PSR expects per-period (non-annualized) SR, NOT annualized
+        sr_per_period = np.mean(returns_series) / np.std(returns_series, ddof=1)
+        result = backtesting.probabilistic_sharpe_ratio(
+            sr_per_period, 0.0, len(returns_series), 0.0, 3.0
+        )
         assert isinstance(result, float)
+        assert 0.0 <= result <= 1.0
 
     def test_deflated_sharpe_ratio(self, returns_series):
-        # deflated_sharpe_ratio(observed_sr, sr_std, n_observations, n_trials, skewness, kurtosis)
-        sr = backtesting.sharpe_ratio(returns_series)
-        result = backtesting.deflated_sharpe_ratio(sr, 0.5, len(returns_series), 10, 0.0, 3.0)
+        # DSR expects per-period (non-annualized) SR, NOT annualized
+        sr_per_period = np.mean(returns_series) / np.std(returns_series, ddof=1)
+        result = backtesting.deflated_sharpe_ratio(
+            sr_per_period, 0.02, len(returns_series), 10, 0.0, 3.0
+        )
         assert isinstance(result, float)
+        assert 0.0 <= result <= 1.0
 
     def test_compute_drawdowns(self, returns_series):
         equity = np.cumsum(returns_series) + 100

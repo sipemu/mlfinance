@@ -72,7 +72,7 @@ gsadf_series = pymlfinance.features.gsadf(log_prices, min_window=min_window, max
 gsadf_max = pymlfinance.features.gsadf_stat(log_prices, min_window=min_window, max_lags=1)
 print(f"\n--- GSADF (Generalized SADF) ---")
 print(f"  GSADF statistic: {gsadf_max:.4f}")
-print(f"  Series length: {len(gsadf_series)}")
+print(f"  Raw series length: {len(gsadf_series)} (O(n^2) sub-window ADF statistics)")
 
 # --- Brown-Durbin-Evans CUSUM Test ---
 # Use first differences as residuals

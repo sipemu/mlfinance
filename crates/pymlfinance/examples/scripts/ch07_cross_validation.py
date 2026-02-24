@@ -31,12 +31,12 @@ X, y = pymlfinance.modeling.make_classification(
     seed=42
 )
 print(f"\nSynthetic dataset: {n_samples} samples, {n_features} features")
-print(f"  Label distribution: {np.sum(y == 0)} negative, {np.sum(y == 1)} positive")
+print(f"  Label distribution: {np.sum(y == -1)} negative, {np.sum(y == 1)} positive")
 
 # Create overlapping events (entry, exit)
 entries = np.arange(n_samples)
 durations = np.random.randint(5, 20, n_samples)
-events = [(int(e), min(int(e + d), n_samples + 50)) for e, d in zip(entries, durations)]
+events = [(int(e), min(int(e + d), n_samples - 1)) for e, d in zip(entries, durations)]
 
 # --- PurgedKFold ---
 print(f"\n--- PurgedKFold (5 folds, 2% embargo) ---")
@@ -68,12 +68,12 @@ class SimpleClassifier:
     def fit(self, X, y, sample_weight=None):
         # Simple: use the mean of first feature as threshold
         pos_mean = np.mean(X[y == 1, 0]) if np.any(y == 1) else 0
-        neg_mean = np.mean(X[y == 0, 0]) if np.any(y == 0) else 0
+        neg_mean = np.mean(X[y == -1, 0]) if np.any(y == -1) else 0
         self.threshold = (pos_mean + neg_mean) / 2
         return self
 
     def predict(self, X):
-        return (X[:, 0] > self.threshold).astype(np.int32)
+        return np.where(X[:, 0] > self.threshold, 1, -1).astype(np.int32)
 
 clf = SimpleClassifier()
 scores = pymlfinance.modeling.cv_score(

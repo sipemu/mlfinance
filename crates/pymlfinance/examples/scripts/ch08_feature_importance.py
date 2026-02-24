@@ -70,7 +70,7 @@ class SimpleClassifier:
         return self
     def predict(self, X):
         scores = X @ self.weights
-        return (scores > np.median(scores)).astype(np.int32)
+        return np.where(scores > 0, 1, -1).astype(np.int32)
 
 clf = SimpleClassifier()
 clf.fit(X, y)

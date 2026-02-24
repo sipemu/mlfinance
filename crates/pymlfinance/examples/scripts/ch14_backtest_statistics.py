@@ -34,10 +34,8 @@ print(f"  Mean: {np.mean(returns):.6f}, Std: {np.std(returns):.6f}")
 
 # --- Sharpe Ratio ---
 sr = pymlfinance.backtesting.sharpe_ratio(returns)
-sr_monthly = pymlfinance.backtesting.sharpe_ratio(returns, periods_per_year=12.0)
 print(f"\n--- Sharpe Ratio ---")
-print(f"  Annualized (daily):   {sr:.4f}")
-print(f"  Annualized (monthly): {sr_monthly:.4f}")
+print(f"  Annualized: {sr:.4f}")
 
 # --- Probabilistic Sharpe Ratio ---
 skew = pymlfinance.core.skewness(returns)
@@ -46,35 +44,38 @@ print(f"\n--- Higher Moments ---")
 print(f"  Skewness: {skew:.4f}")
 print(f"  Excess Kurtosis: {kurt:.4f}")
 
+# PSR uses the per-period (non-annualized) Sharpe ratio
+sr_per_period = np.mean(returns) / np.std(returns, ddof=1)
+
 psr = pymlfinance.backtesting.probabilistic_sharpe_ratio(
-    observed_sr=sr,
-    benchmark_sr=0.0,  # benchmark: zero SR
+    observed_sr=sr_per_period,
+    benchmark_sr=0.0,
     n_observations=n,
     skewness=skew,
     kurtosis=kurt
 )
 print(f"\n--- Probabilistic Sharpe Ratio ---")
+print(f"  Per-period SR: {sr_per_period:.4f} (annualized: {sr:.4f})")
 print(f"  PSR(SR > 0): {psr:.4f}")
 print(f"  Interpretation: {psr:.0%} probability that true SR > 0")
 
-# PSR with different benchmarks
-for bench in [0.0, 0.5, 1.0, 1.5]:
+# PSR with different per-period benchmarks
+for bench in [0.0, 0.01, 0.02, 0.05]:
     p = pymlfinance.backtesting.probabilistic_sharpe_ratio(
-        sr, bench, n, skew, kurt
+        sr_per_period, bench, n, skew, kurt
     )
     print(f"  PSR(SR > {bench}): {p:.4f}")
 
 # --- Deflated Sharpe Ratio ---
 # Simulate testing multiple strategies
 n_trials = 20
-trial_srs = [pymlfinance.backtesting.sharpe_ratio(
-    np.random.randn(n) * 0.01 + 0.0002
-) for _ in range(n_trials - 1)]
-trial_srs.append(sr)  # include our strategy
+trial_srs = [np.mean(r := np.random.randn(n) * 0.01 + 0.0002) / np.std(r, ddof=1)
+             for _ in range(n_trials - 1)]
+trial_srs.append(sr_per_period)  # include our strategy
 sr_std = np.std(trial_srs)
 
 dsr = pymlfinance.backtesting.deflated_sharpe_ratio(
-    observed_sr=sr,
+    observed_sr=sr_per_period,
     sr_std=sr_std,
     n_observations=n,
     n_trials=n_trials,

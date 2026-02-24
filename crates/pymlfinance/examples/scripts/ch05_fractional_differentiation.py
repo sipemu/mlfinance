@@ -42,9 +42,15 @@ print(f"\n--- FFD at Various d Values ---")
 d_values = [0.2, 0.4, 0.6, 0.8, 1.0]
 for d in d_values:
     ffd = pymlfinance.sampling.frac_diff_ffd(log_prices, d=d, threshold=1e-4)
-    corr = np.corrcoef(log_prices[:len(ffd)], ffd)[0, 1] if len(ffd) > 0 else 0.0
-    adf_stat, _ = pymlfinance.features.adf_test(ffd, max_lags=1)
-    print(f"  d={d:.1f}: len={len(ffd)}, corr_with_original={corr:.4f}, ADF={adf_stat:.4f}")
+    # FFD pads leading entries with NaN — strip them before computing stats
+    valid = ~np.isnan(ffd)
+    ffd_valid = ffd[valid]
+    if len(ffd_valid) > 0:
+        corr = np.corrcoef(log_prices[valid], ffd_valid)[0, 1]
+        adf_stat, _ = pymlfinance.features.adf_test(ffd_valid, max_lags=1)
+    else:
+        corr, adf_stat = 0.0, 0.0
+    print(f"  d={d:.1f}: len={len(ffd_valid)}, corr_with_original={corr:.4f}, ADF={adf_stat:.4f}")
 
 # --- Expanding Window vs FFD ---
 print(f"\n--- Expanding Window vs FFD (d=0.5) ---")
@@ -55,7 +61,7 @@ print(f"  Expanding length: {len(exp_result)}")
 if len(ffd_result) > 0 and len(exp_result) > 0:
     min_len = min(len(ffd_result), len(exp_result))
     diff = np.abs(ffd_result[:min_len] - exp_result[:min_len])
-    print(f"  Mean absolute difference: {np.mean(diff):.6f}")
+    print(f"  Mean absolute difference: {np.nanmean(diff):.6f}")
 
 # --- Find Minimum d for Stationarity ---
 min_d = pymlfinance.sampling.find_min_d(log_prices, max_d=1.0, step_size=0.1, threshold=1e-4)
@@ -65,8 +71,10 @@ print(f"  min_d = {min_d:.2f}")
 # Verify
 ffd_min = pymlfinance.sampling.frac_diff_ffd(log_prices, d=min_d, threshold=1e-4)
 if len(ffd_min) > 0:
-    adf_stat, _ = pymlfinance.features.adf_test(ffd_min, max_lags=1)
-    corr = np.corrcoef(log_prices[:len(ffd_min)], ffd_min)[0, 1]
+    valid = ~np.isnan(ffd_min)
+    ffd_valid = ffd_min[valid]
+    adf_stat, _ = pymlfinance.features.adf_test(ffd_valid, max_lags=1)
+    corr = np.corrcoef(log_prices[valid], ffd_valid)[0, 1]
     print(f"  ADF statistic at d={min_d:.2f}: {adf_stat:.4f}")
     print(f"  Correlation with original: {corr:.4f}")
     print(f"  (Compare: integer differencing d=1.0 destroys all memory)")

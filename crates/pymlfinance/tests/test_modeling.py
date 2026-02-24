@@ -45,9 +45,9 @@ class TestFeatureImportance:
         x, y = modeling.make_classification(100, 3, 2, 1, 42)
         assert x.shape == (100, 6)
         assert len(y) == 100
-        # Labels can be -1 or 1
+        # Labels are strictly {-1, 1} (not {0, 1} like sklearn)
         unique = set(np.unique(y))
-        assert unique <= {-1.0, 0.0, 1.0}
+        assert unique == {-1.0, 1.0}
 
 
 class TestHyperparams:
