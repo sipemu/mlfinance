@@ -8,11 +8,32 @@ version = "0.1.0"
 description = "Python bindings for the mlfinance AFML toolkit"
 requires-python = ">=3.9"
 license = { text = "BUSL-1.1" }
+authors = [
+    { name = "Simon Mueller" },
+]
+keywords = ["finance", "machine-learning", "quantitative-finance", "trading", "backtesting", "portfolio-optimization"]
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "License :: Other/Proprietary License",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering",
 ]
+
+[project.urls]
+Homepage = "https://github.com/sipemu/mlfinance"
+Documentation = "https://sipemu.github.io/mlfinance/"
+Repository = "https://github.com/sipemu/mlfinance.git"
+"Issue Tracker" = "https://github.com/sipemu/mlfinance/issues"
 
 dependencies = ["numpy"]
 
