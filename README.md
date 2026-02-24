@@ -128,6 +128,10 @@ cargo test --workspace
 
 The minimum supported Rust version is **1.75**.
 
+## Disclaimer
+
+This software is provided for educational and research purposes only. It does not constitute financial advice. Use of this code for trading or investment decisions is entirely at your own risk. The authors accept no liability for any financial losses incurred.
+
 ## License
 
 Rust crates: MIT License — see [LICENSE](LICENSE).
