@@ -20,10 +20,14 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - toc.follow
     - search.suggest
+    - search.highlight
     - content.code.copy
 
 plugins:
@@ -53,29 +57,40 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
   - toc:
       permalink: true
 
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
-  - Polars Integration: polars.md
   - Examples:
       - Overview: examples-overview.md
-      - Financial Data Structures: examples/ch02_financial_data_structures.ipynb
-      - Labeling: examples/ch03_labeling.ipynb
-      - Sample Weights: examples/ch04_sample_weights.ipynb
-      - Fractional Differentiation: examples/ch05_fractional_differentiation.ipynb
-      - Ensemble Methods: examples/ch06_ensemble_methods.ipynb
-      - Cross-Validation: examples/ch07_cross_validation.ipynb
-      - Feature Importance: examples/ch08_feature_importance.ipynb
-      - Bet Sizing: examples/ch10_bet_sizing.ipynb
-      - Backtesting Dangers: examples/ch11_backtesting_dangers.ipynb
-      - Synthetic Data: examples/ch13_synthetic_data.ipynb
-      - Backtest Statistics: examples/ch14_backtest_statistics.ipynb
-      - Structural Breaks: examples/ch17_structural_breaks.ipynb
-      - Entropy Features: examples/ch18_entropy_features.ipynb
-      - Microstructure: examples/ch19_microstructure.ipynb
+      - Data Processing:
+          - Ch 2 — Financial Data Structures: examples/ch02_financial_data_structures.ipynb
+          - Ch 3 — Labeling: examples/ch03_labeling.ipynb
+          - Ch 4 — Sample Weights: examples/ch04_sample_weights.ipynb
+          - Ch 5 — Fractional Differentiation: examples/ch05_fractional_differentiation.ipynb
+      - Feature Engineering:
+          - Ch 17 — Structural Breaks: examples/ch17_structural_breaks.ipynb
+          - Ch 18 — Entropy Features: examples/ch18_entropy_features.ipynb
+          - Ch 19 — Microstructure: examples/ch19_microstructure.ipynb
+      - Model Validation:
+          - Ch 6 — Ensemble Methods: examples/ch06_ensemble_methods.ipynb
+          - Ch 7 — Cross-Validation: examples/ch07_cross_validation.ipynb
+          - Ch 8 — Feature Importance: examples/ch08_feature_importance.ipynb
+      - Strategy & Backtesting:
+          - Ch 10 — Bet Sizing: examples/ch10_bet_sizing.ipynb
+          - Ch 11 — Backtesting Dangers: examples/ch11_backtesting_dangers.ipynb
+          - Ch 13 — Synthetic Data: examples/ch13_synthetic_data.ipynb
+          - Ch 14 — Backtest Statistics: examples/ch14_backtest_statistics.ipynb
+          - Ch 15 — Strategy Risk: examples/ch15_strategy_risk.ipynb
+      - Portfolio Allocation:
+          - Ch 16 — Machine Learning Asset Allocation: examples/ch16_portfolio_allocation.ipynb
+  - Polars: polars.md
   - API Reference:
       - Core: api/core.md
       - Data: api/data.md
