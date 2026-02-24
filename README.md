@@ -134,5 +134,4 @@ This software is provided for educational and research purposes only. It does no
 
 ## License
 
-Rust crates: MIT License — see [LICENSE](LICENSE).
-Python bindings (`pymlfinance`): BUSL-1.1.
+BUSL-1.1 — see [LICENSE](LICENSE).
