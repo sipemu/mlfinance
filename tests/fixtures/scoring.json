@@ -1,0 +1,170 @@
+{
+  "cases": [
+    {
+      "type": "f1_score",
+      "label": "perfect",
+      "y_true": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "y_pred": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "result": 1.0
+    },
+    {
+      "type": "f1_score",
+      "label": "all_wrong",
+      "y_true": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "y_pred": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "result": 0.0
+    },
+    {
+      "type": "f1_score",
+      "label": "mixed",
+      "y_true": [
+        1.0,
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "y_pred": [
+        1.0,
+        1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "result": 0.6666666666666666
+    },
+    {
+      "type": "f1_score",
+      "label": "no_positives",
+      "y_true": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "y_pred": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "result": 0.0
+    },
+    {
+      "type": "accuracy_score",
+      "label": "perfect",
+      "y_true": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "y_pred": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "result": 1.0
+    },
+    {
+      "type": "accuracy_score",
+      "label": "all_wrong",
+      "y_true": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "y_pred": [
+        -1.0,
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "result": 0.0
+    },
+    {
+      "type": "accuracy_score",
+      "label": "half_right",
+      "y_true": [
+        1.0,
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "y_pred": [
+        1.0,
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "result": 0.5
+    },
+    {
+      "type": "neg_log_loss",
+      "label": "good_predictions",
+      "y_true": [
+        1.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "y_proba": [
+        0.9,
+        0.1,
+        0.8,
+        0.2
+      ],
+      "result": -0.164252033486018
+    },
+    {
+      "type": "neg_log_loss",
+      "label": "bad_predictions",
+      "y_true": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "y_proba": [
+        0.1,
+        0.9,
+        0.2
+      ],
+      "result": -2.0715360328073973
+    },
+    {
+      "type": "neg_log_loss",
+      "label": "perfect_ish",
+      "y_true": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "y_proba": [
+        0.999,
+        0.001,
+        0.999
+      ],
+      "result": -0.0010005003335835344
+    }
+  ]
+}

@@ -1099,6 +1099,674 @@ def generate_volatility_estimators():
     save_fixture("volatility_estimators.json", {"cases": cases})
 
 
+# =====================================================================
+# P1 — Pedantic Numerical Correctness Fixtures
+# =====================================================================
+
+
+# --- Group 1: Core Statistics ---
+def generate_core_statistics():
+    from scipy.stats import skew, kurtosis as sp_kurtosis
+
+    cases = []
+
+    # Case 1: small dataset
+    data1 = [1.0, 2.0, 3.0, 4.0, 5.0]
+    cases.append({
+        "type": "univariate",
+        "label": "simple_5",
+        "data": data1,
+        "skewness": float(skew(data1, bias=False)),
+        "kurtosis": float(sp_kurtosis(data1, bias=False, fisher=True)),
+    })
+
+    # Case 2: 10-element with asymmetry
+    np.random.seed(42)
+    data2 = list(np.random.exponential(2.0, 10))
+    cases.append({
+        "type": "univariate",
+        "label": "exponential_10",
+        "data": data2,
+        "skewness": float(skew(data2, bias=False)),
+        "kurtosis": float(sp_kurtosis(data2, bias=False, fisher=True)),
+    })
+
+    # Case 3: 100-element normal
+    np.random.seed(123)
+    data3 = list(np.random.randn(100))
+    cases.append({
+        "type": "univariate",
+        "label": "normal_100",
+        "data": data3,
+        "skewness": float(skew(data3, bias=False)),
+        "kurtosis": float(sp_kurtosis(data3, bias=False, fisher=True)),
+    })
+
+    # Case 4: constant data -> skewness = 0, kurtosis = 0 (but needs n>=4)
+    data4 = [5.0, 5.0, 5.0, 5.0, 5.0]
+    # When std=0, Rust returns 0.0 for both
+    cases.append({
+        "type": "univariate",
+        "label": "constant_5",
+        "data": data4,
+        "skewness": 0.0,
+        "kurtosis": 0.0,
+    })
+
+    # Correlation / covariance matrix cases
+    np.random.seed(42)
+    mat1 = np.random.randn(20, 3)
+    # Add correlation structure
+    mat1[:, 1] = mat1[:, 0] * 0.7 + mat1[:, 1] * 0.3
+    corr1 = np.corrcoef(mat1.T).tolist()
+    cov1 = np.cov(mat1.T, ddof=1).tolist()
+    cases.append({
+        "type": "matrix",
+        "label": "3x3_correlated",
+        "data": mat1.tolist(),
+        "n_rows": 20,
+        "n_cols": 3,
+        "correlation_matrix": corr1,
+        "covariance_matrix": cov1,
+    })
+
+    np.random.seed(99)
+    mat2 = np.random.randn(50, 2)
+    corr2 = np.corrcoef(mat2.T).tolist()
+    cov2 = np.cov(mat2.T, ddof=1).tolist()
+    cases.append({
+        "type": "matrix",
+        "label": "2x2_independent",
+        "data": mat2.tolist(),
+        "n_rows": 50,
+        "n_cols": 2,
+        "correlation_matrix": corr2,
+        "covariance_matrix": cov2,
+    })
+
+    save_fixture("core_statistics.json", {"cases": cases})
+
+
+# --- Group 2: Codependence Metrics ---
+def generate_codependence():
+    cases = []
+
+    # Helper: distance correlation via double centering
+    def dcor_python(x, y):
+        n = len(x)
+        a = np.abs(np.subtract.outer(x, x))
+        b = np.abs(np.subtract.outer(y, y))
+        A = a - a.mean(axis=0) - a.mean(axis=1, keepdims=True) + a.mean()
+        B = b - b.mean(axis=0) - b.mean(axis=1, keepdims=True) + b.mean()
+        dcov_sq = (A * B).mean()
+        dvar_x_sq = (A * A).mean()
+        dvar_y_sq = (B * B).mean()
+        denom = np.sqrt(dvar_x_sq * dvar_y_sq)
+        if denom < 1e-15:
+            return 0.0
+        return float(np.sqrt(max(0, dcov_sq / denom)))
+
+    # Helper: mutual information from histogram
+    def mi_python(x, y, n_bins):
+        n = len(x)
+        x_arr = np.array(x, dtype=float)
+        y_arr = np.array(y, dtype=float)
+        x_min, x_max = x_arr.min(), x_arr.max()
+        y_min, y_max = y_arr.min(), y_arr.max()
+        x_range = x_max - x_min
+        y_range = y_max - y_min
+        x_width = x_range * (1.0 + 1e-10) / n_bins if x_range > 1e-15 else 1.0
+        y_width = y_range * (1.0 + 1e-10) / n_bins if y_range > 1e-15 else 1.0
+        hist_x = np.zeros(n_bins, dtype=int)
+        hist_y = np.zeros(n_bins, dtype=int)
+        hist_xy = np.zeros((n_bins, n_bins), dtype=int)
+        for i in range(n):
+            bx = int((x_arr[i] - x_min) / x_width) if x_range > 1e-15 else 0
+            by = int((y_arr[i] - y_min) / y_width) if y_range > 1e-15 else 0
+            bx = min(bx, n_bins - 1)
+            by = min(by, n_bins - 1)
+            hist_x[bx] += 1
+            hist_y[by] += 1
+            hist_xy[bx, by] += 1
+        nf = float(n)
+        hx = -sum(c / nf * np.log2(c / nf) for c in hist_x if c > 0)
+        hy = -sum(c / nf * np.log2(c / nf) for c in hist_y if c > 0)
+        hxy = -sum(
+            c / nf * np.log2(c / nf)
+            for c in hist_xy.flatten()
+            if c > 0
+        )
+        mi = max(0.0, hx + hy - hxy)
+        return float(mi), float(hx), float(hy), float(hxy)
+
+    # Test datasets
+    np.random.seed(42)
+    x1 = list(np.random.randn(50))
+    y1_linear = [xi * 2.0 + 0.5 + e for xi, e in zip(x1, np.random.randn(50) * 0.1)]
+    y1_quadratic = [xi * xi + e for xi, e in zip(x1, np.random.randn(50) * 0.1)]
+    y1_independent = list(np.random.randn(50))
+    np.random.seed(77)
+    x2 = list(np.random.randn(30))
+    y2_partial = [xi * 0.5 + e for xi, e in zip(x2, np.random.randn(30) * 0.8)]
+
+    for label, x, y in [
+        ("linear", x1, y1_linear),
+        ("quadratic", x1, y1_quadratic),
+        ("independent", x1, y1_independent),
+        ("partial", x2, y2_partial),
+    ]:
+        rho = float(np.corrcoef(x, y)[0, 1])
+        rho_clamped = max(-1.0, min(1.0, rho))
+        ang = float(np.arccos(rho_clamped) / np.pi)
+        abs_ang = float(np.arccos(abs(rho_clamped)) / np.pi)
+        sq_ang = float(np.arccos(max(0.0, min(1.0, rho_clamped ** 2))) / np.pi)
+        dc = dcor_python(np.array(x), np.array(y))
+
+        n_bins = 5
+        mi_val, hx, hy, hxy = mi_python(x, y, n_bins)
+        vi_val = float(max(0.0, hxy - mi_val))
+
+        cases.append({
+            "label": label,
+            "x": x,
+            "y": y,
+            "angular_distance": ang,
+            "absolute_angular_distance": abs_ang,
+            "squared_angular_distance": sq_ang,
+            "distance_correlation": dc,
+            "n_bins": n_bins,
+            "mutual_information": mi_val,
+            "variation_of_information": vi_val,
+        })
+
+    save_fixture("codependence.json", {"cases": cases})
+
+
+# --- Group 3: Microstructure ---
+def generate_microstructure():
+    cases = []
+    np.random.seed(42)
+
+    # Amihud lambda
+    returns_a = [0.01, -0.02, 0.005, -0.01, 0.015, -0.005, 0.02, -0.008]
+    dollar_volumes_a = [1e6, 2e6, 1.5e6, 1e6, 2.5e6, 1.2e6, 1.8e6, 2.2e6]
+    amihud = sum(abs(r) / v for r, v in zip(returns_a, dollar_volumes_a)) / len(returns_a)
+    cases.append({
+        "type": "amihud_lambda",
+        "returns": returns_a,
+        "dollar_volumes": dollar_volumes_a,
+        "result": float(amihud),
+    })
+
+    # Kyle lambda
+    signed_volume_k = [100.0, -50.0, 200.0, -100.0, 150.0, -75.0, 120.0, -200.0]
+    returns_k = [0.01, -0.005, 0.02, -0.01, 0.015, -0.008, 0.012, -0.018]
+    n_k = len(returns_k)
+    mean_r = sum(returns_k) / n_k
+    mean_sv = sum(signed_volume_k) / n_k
+    cov_xy = sum((sv - mean_sv) * (r - mean_r) for sv, r in zip(signed_volume_k, returns_k))
+    var_x = sum((sv - mean_sv) ** 2 for sv in signed_volume_k)
+    kyle = cov_xy / var_x if abs(var_x) > 1e-15 else 0.0
+    cases.append({
+        "type": "kyle_lambda",
+        "returns": returns_k,
+        "signed_volume": signed_volume_k,
+        "result": float(kyle),
+    })
+
+    # Roll spread
+    prices_roll = [100.0, 100.5, 100.0, 100.5, 100.0, 100.5, 100.0, 100.5,
+                   100.0, 100.5]
+    changes = [prices_roll[i + 1] - prices_roll[i] for i in range(len(prices_roll) - 1)]
+    n_ch = len(changes)
+    mean_ch = sum(changes) / n_ch
+    autocov = sum(
+        (changes[i] - mean_ch) * (changes[i - 1] - mean_ch) for i in range(1, n_ch)
+    ) / (n_ch - 1)
+    roll = 2.0 * math.sqrt(-autocov) if autocov < 0 else 0.0
+    cases.append({
+        "type": "roll_spread",
+        "prices": prices_roll,
+        "result": float(roll),
+    })
+
+    # Roll spread with trending prices -> should be 0
+    prices_trend = [100.0, 101.0, 102.0, 103.0, 104.0, 105.0]
+    changes_t = [prices_trend[i + 1] - prices_trend[i] for i in range(len(prices_trend) - 1)]
+    n_t = len(changes_t)
+    mean_t = sum(changes_t) / n_t
+    autocov_t = sum(
+        (changes_t[i] - mean_t) * (changes_t[i - 1] - mean_t) for i in range(1, n_t)
+    ) / (n_t - 1)
+    roll_t = 2.0 * math.sqrt(-autocov_t) if autocov_t < 0 else 0.0
+    cases.append({
+        "type": "roll_spread",
+        "prices": prices_trend,
+        "result": float(roll_t),
+    })
+
+    # Tick rule classify
+    prices_tick = [100.0, 101.0, 101.0, 99.0, 99.5, 99.5, 100.0]
+    signs = [0.0]  # first element
+    last_sign = 0.0
+    for i in range(1, len(prices_tick)):
+        diff = prices_tick[i] - prices_tick[i - 1]
+        if diff > 0:
+            last_sign = 1.0
+        elif diff < 0:
+            last_sign = -1.0
+        signs.append(last_sign)
+    cases.append({
+        "type": "tick_rule",
+        "prices": prices_tick,
+        "result": signs,
+    })
+
+    # Corwin-Schultz spread
+    highs_cs = [105.0, 106.0, 104.0, 107.0, 105.0, 106.5, 103.0, 108.0]
+    lows_cs = [100.0, 101.0, 99.0, 102.0, 100.0, 101.5, 98.0, 103.0]
+    n_cs = min(len(highs_cs), len(lows_cs))
+    cs_spreads = []
+    sqrt2 = math.sqrt(2.0)
+    cs_denom = 3.0 - 2.0 * sqrt2
+    for t in range(n_cs - 1):
+        h_t, l_t = highs_cs[t], lows_cs[t]
+        h_t1, l_t1 = highs_cs[t + 1], lows_cs[t + 1]
+        beta_val = math.log(h_t / l_t) ** 2 + math.log(h_t1 / l_t1) ** 2
+        h_2d = max(h_t, h_t1)
+        l_2d = min(l_t, l_t1)
+        gamma_val = math.log(h_2d / l_2d) ** 2
+        term1 = (math.sqrt(2.0 * beta_val) - math.sqrt(beta_val)) / cs_denom
+        term2 = math.sqrt(max(0.0, gamma_val / cs_denom))
+        alpha_val = term1 - term2
+        if alpha_val > 0:
+            exp_a = math.exp(alpha_val)
+            spread = 2.0 * (exp_a - 1.0) / (1.0 + exp_a)
+        else:
+            spread = 0.0
+        cs_spreads.append(max(0.0, spread))
+    cases.append({
+        "type": "corwin_schultz",
+        "highs": highs_cs,
+        "lows": lows_cs,
+        "result": cs_spreads,
+    })
+
+    # VPIN
+    np.random.seed(42)
+    n_vpin = 200
+    prices_vpin = list(50.0 + np.cumsum(np.random.randn(n_vpin) * 0.1))
+    volumes_vpin = list(np.abs(np.random.randn(n_vpin)) * 100 + 50)
+    bucket_size = 500.0
+    n_buckets = 5
+
+    # Classify volume using tick rule
+    vpin_signs = [0.0]
+    vpin_last = 0.0
+    for i in range(1, n_vpin):
+        d = prices_vpin[i] - prices_vpin[i - 1]
+        if d > 0:
+            vpin_last = 1.0
+        elif d < 0:
+            vpin_last = -1.0
+        vpin_signs.append(vpin_last)
+
+    # Aggregate into buckets
+    buy_buckets = []
+    sell_buckets = []
+    cur_buy, cur_sell, cur_vol = 0.0, 0.0, 0.0
+    for i in range(n_vpin):
+        if vpin_signs[i] > 0:
+            cur_buy += volumes_vpin[i]
+        else:
+            cur_sell += volumes_vpin[i]
+        cur_vol += volumes_vpin[i]
+        if cur_vol >= bucket_size:
+            buy_buckets.append(cur_buy)
+            sell_buckets.append(cur_sell)
+            cur_buy, cur_sell, cur_vol = 0.0, 0.0, 0.0
+
+    num_b = len(buy_buckets)
+    vpin_result = []
+    if num_b >= n_buckets:
+        for i in range(num_b - n_buckets + 1):
+            imb = sum(
+                abs(buy_buckets[j] - sell_buckets[j])
+                for j in range(i, i + n_buckets)
+            )
+            vol = sum(
+                buy_buckets[j] + sell_buckets[j]
+                for j in range(i, i + n_buckets)
+            )
+            vpin_result.append(imb / vol if vol > 0 else 0.0)
+
+    cases.append({
+        "type": "vpin",
+        "prices": prices_vpin,
+        "volumes": volumes_vpin,
+        "bucket_size": bucket_size,
+        "n_buckets": n_buckets,
+        "result": vpin_result,
+    })
+
+    save_fixture("microstructure.json", {"cases": cases})
+
+
+# --- Group 4: Entropy Extended ---
+def generate_entropy_extended():
+    cases = []
+
+    # Shannon entropy
+    for label, probs in [
+        ("uniform_4", [0.25, 0.25, 0.25, 0.25]),
+        ("binary_fair", [0.5, 0.5]),
+        ("deterministic", [1.0, 0.0, 0.0]),
+        ("skewed", [0.7, 0.2, 0.1]),
+        ("uniform_8", [0.125] * 8),
+    ]:
+        h = -sum(p * math.log2(p) for p in probs if p > 0)
+        cases.append({
+            "type": "shannon_entropy",
+            "label": label,
+            "probs": probs,
+            "result": h,
+        })
+
+    # Kontoyiannis entropy
+    for label, seq, window in [
+        ("constant", [0] * 100, 20),
+        ("periodic", list(range(4)) * 25, 20),
+        ("pseudo_random", [(i * 7 + 3) % 8 for i in range(200)], 30),
+    ]:
+        n = len(seq)
+        if n <= window or window == 0:
+            h = 0.0
+        else:
+            sum_inv = 0.0
+            count = 0
+            for i in range(window, n):
+                search_start = max(0, i - window)
+                max_match = 0
+                for start in range(search_start, i):
+                    match_len = 0
+                    while (
+                        i + match_len < n
+                        and start + match_len < i
+                        and seq[i + match_len] == seq[start + match_len]
+                    ):
+                        match_len += 1
+                    max_match = max(max_match, match_len)
+                l = max_match + 1
+                if l > 0:
+                    sum_inv += 1.0 / l
+                    count += 1
+            h = (sum_inv / count) * math.log2(window) if count > 0 else 0.0
+        cases.append({
+            "type": "kontoyiannis_entropy",
+            "label": label,
+            "sequence": seq,
+            "window": window,
+            "result": h,
+        })
+
+    # Gaussian entropy and entropy-implied vol
+    for var in [0.01, 0.04, 1.0, 4.0, 0.25]:
+        h = 0.5 * math.log2(2.0 * math.pi * math.e * var)
+        vol = math.sqrt(2.0 ** (2.0 * h) / (2.0 * math.pi * math.e))
+        cases.append({
+            "type": "gaussian_entropy",
+            "variance": var,
+            "entropy": h,
+            "implied_vol": vol,
+        })
+
+    save_fixture("entropy_extended.json", {"cases": cases})
+
+
+# --- Group 5: Portfolio Allocation ---
+def generate_portfolio_allocation():
+    cases = []
+
+    # 2x2 diagonal
+    cov1 = [[0.04, 0.0], [0.0, 0.01]]
+    inv_var1 = [1.0 / 0.04, 1.0 / 0.01]
+    total = sum(inv_var1)
+    w1 = [v / total for v in inv_var1]
+    cases.append({
+        "label": "2x2_diagonal",
+        "covariance": cov1,
+        "n": 2,
+        "weights": w1,
+    })
+
+    # 3x3 with off-diagonal (only diagonal matters for IVP)
+    cov2 = [[0.04, 0.01, 0.005], [0.01, 0.09, 0.003], [0.005, 0.003, 0.01]]
+    diag2 = [cov2[i][i] for i in range(3)]
+    inv_var2 = [1.0 / d for d in diag2]
+    total2 = sum(inv_var2)
+    w2 = [v / total2 for v in inv_var2]
+    cases.append({
+        "label": "3x3_mixed",
+        "covariance": cov2,
+        "n": 3,
+        "weights": w2,
+    })
+
+    # 5x5 equal variance
+    cov3 = [[0.0] * 5 for _ in range(5)]
+    for i in range(5):
+        cov3[i][i] = 0.04
+    w3 = [0.2] * 5
+    cases.append({
+        "label": "5x5_equal",
+        "covariance": cov3,
+        "n": 5,
+        "weights": w3,
+    })
+
+    save_fixture("portfolio_allocation.json", {"cases": cases})
+
+
+# --- Group 6: Scoring ---
+def generate_scoring():
+    cases = []
+
+    # F1 score (binary: positive class > 0, i.e. 1.0; negative class <= 0, i.e. -1.0)
+    for label, y_true, y_pred in [
+        ("perfect", [1.0, -1.0, 1.0, -1.0], [1.0, -1.0, 1.0, -1.0]),
+        ("all_wrong", [1.0, 1.0, 1.0, 1.0], [-1.0, -1.0, -1.0, -1.0]),
+        ("mixed", [1.0, 1.0, -1.0, 1.0, -1.0], [1.0, 1.0, 1.0, -1.0, -1.0]),
+        ("no_positives", [-1.0, -1.0, -1.0], [-1.0, -1.0, -1.0]),
+    ]:
+        tp = sum(1 for t, p in zip(y_true, y_pred) if t > 0 and p > 0)
+        fp = sum(1 for t, p in zip(y_true, y_pred) if t <= 0 and p > 0)
+        fn_ = sum(1 for t, p in zip(y_true, y_pred) if t > 0 and p <= 0)
+        prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        rec = tp / (tp + fn_) if (tp + fn_) > 0 else 0.0
+        f1 = 2.0 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
+        cases.append({
+            "type": "f1_score",
+            "label": label,
+            "y_true": y_true,
+            "y_pred": y_pred,
+            "result": f1,
+        })
+
+    # Accuracy score
+    for label, y_true, y_pred in [
+        ("perfect", [1.0, -1.0, 1.0, -1.0], [1.0, -1.0, 1.0, -1.0]),
+        ("all_wrong", [1.0, -1.0, 1.0, -1.0], [-1.0, 1.0, -1.0, 1.0]),
+        ("half_right", [1.0, -1.0, 1.0, -1.0], [1.0, 1.0, -1.0, -1.0]),
+    ]:
+        correct = sum(1 for t, p in zip(y_true, y_pred) if abs(t - p) < 1e-10)
+        acc = correct / len(y_true)
+        cases.append({
+            "type": "accuracy_score",
+            "label": label,
+            "y_true": y_true,
+            "y_pred": y_pred,
+            "result": acc,
+        })
+
+    # Neg log loss (binary: y_true in {0,1}, y_proba in [0,1])
+    eps = 1e-15
+    for label, y_true, y_proba in [
+        ("good_predictions", [1.0, 0.0, 1.0, 0.0], [0.9, 0.1, 0.8, 0.2]),
+        ("bad_predictions", [1.0, 0.0, 1.0], [0.1, 0.9, 0.2]),
+        ("perfect_ish", [1.0, 0.0, 1.0], [0.999, 0.001, 0.999]),
+    ]:
+        n = len(y_true)
+        total = 0.0
+        for t, p in zip(y_true, y_proba):
+            pc = max(eps, min(1.0 - eps, p))
+            total += t * math.log(pc) + (1.0 - t) * math.log(1.0 - pc)
+        nll = total / n
+        cases.append({
+            "type": "neg_log_loss",
+            "label": label,
+            "y_true": y_true,
+            "y_proba": y_proba,
+            "result": nll,
+        })
+
+    save_fixture("scoring.json", {"cases": cases})
+
+
+# --- Group 7: Strategy Risk Extended ---
+def generate_strategy_risk_extended():
+    cases = []
+
+    for precision, freq, ratio in [
+        (0.55, 252.0, 1.0),
+        (0.60, 252.0, 1.5),
+        (0.45, 52.0, 2.0),
+        (0.70, 12.0, 1.0),
+        (0.50, 252.0, 1.0),  # SR should be 0
+        (0.40, 252.0, 3.0),  # high W/L compensates low precision
+    ]:
+        p = precision
+        r = ratio
+        expected = p * r - (1.0 - p)
+        variance = p * (1.0 - p) * (r + 1.0) ** 2
+        if variance > 0:
+            sr_per_bet = expected / math.sqrt(variance)
+            sr = sr_per_bet * math.sqrt(freq)
+        else:
+            sr = 0.0
+        cases.append({
+            "type": "sr_from_precision",
+            "precision": precision,
+            "freq": freq,
+            "avg_win_loss_ratio": ratio,
+            "result": sr,
+        })
+
+    # Implied precision: roundtrip from sr_from_precision
+    for precision, freq, ratio in [
+        (0.55, 252.0, 1.0),
+        (0.60, 252.0, 1.5),
+        (0.70, 12.0, 1.0),
+    ]:
+        p = precision
+        r = ratio
+        expected = p * r - (1.0 - p)
+        variance = p * (1.0 - p) * (r + 1.0) ** 2
+        sr_per_bet = expected / math.sqrt(variance) if variance > 0 else 0.0
+        sr = sr_per_bet * math.sqrt(freq)
+        # The roundtrip should recover precision
+        cases.append({
+            "type": "implied_precision",
+            "target_sr": sr,
+            "freq": freq,
+            "avg_win_loss_ratio": ratio,
+            "result": precision,
+        })
+
+    # Edge case: SR = 0 with 1:1 -> precision = 0.5
+    cases.append({
+        "type": "implied_precision",
+        "target_sr": 0.0,
+        "freq": 252.0,
+        "avg_win_loss_ratio": 1.0,
+        "result": 0.5,
+    })
+
+    save_fixture("strategy_risk_extended.json", {"cases": cases})
+
+
+# --- Group 8: Sampling Extended ---
+def generate_sampling_extended():
+    cases = []
+
+    # Time decay - positive oldest_weight
+    for label, weights, oldest_weight in [
+        ("full_decay", [1.0, 1.0, 1.0, 1.0], 0.0),
+        ("no_decay", [1.0, 2.0, 3.0, 4.0], 1.0),
+        ("half_decay", [1.0, 1.0, 1.0], 0.5),
+        ("varying", [2.0, 4.0, 6.0], 0.5),
+    ]:
+        n = len(weights)
+        if n == 0:
+            result = []
+        elif n == 1:
+            result = [weights[0] * max(0.0, min(1.0, oldest_weight))]
+        else:
+            ow = min(oldest_weight, 1.0)
+            factors = [ow + (i / (n - 1)) * (1.0 - ow) for i in range(n)]
+            result = [w * f for w, f in zip(weights, factors)]
+        cases.append({
+            "type": "time_decay",
+            "label": label,
+            "weights": weights,
+            "oldest_weight": oldest_weight,
+            "result": result,
+        })
+
+    # Time decay - negative oldest_weight
+    weights_neg = [1.0, 1.0, 1.0, 1.0, 1.0]
+    oldest_neg = -2.0
+    n_neg = len(weights_neg)
+    zero_count = min(int(abs(oldest_neg)), n_neg)
+    remaining = n_neg - zero_count
+    factors_neg = [0.0] * n_neg
+    if remaining > 0:
+        for i in range(remaining):
+            if remaining == 1:
+                factors_neg[zero_count + i] = 1.0
+            else:
+                factors_neg[zero_count + i] = i / (remaining - 1)
+        factors_neg[n_neg - 1] = 1.0
+    result_neg = [w * f for w, f in zip(weights_neg, factors_neg)]
+    cases.append({
+        "type": "time_decay",
+        "label": "negative_oldest",
+        "weights": weights_neg,
+        "oldest_weight": oldest_neg,
+        "result": result_neg,
+    })
+
+    # Balanced class weights
+    for label, labels in [
+        ("balanced_2class", [0, 0, 1, 1]),
+        ("imbalanced_2class", [0, 0, 0, 1]),
+        ("three_class", [-1, -1, 0, 1, 1, 1]),
+        ("single_class", [1, 1, 1, 1]),
+    ]:
+        from collections import Counter
+        counts = Counter(labels)
+        n_total = len(labels)
+        k = len(counts)
+        class_weights = {str(c): n_total / (k * cnt) for c, cnt in counts.items()}
+        cases.append({
+            "type": "balanced_class_weights",
+            "label": label,
+            "labels": labels,
+            "weights": class_weights,
+        })
+
+    save_fixture("sampling_extended.json", {"cases": cases})
+
+
 if __name__ == "__main__":
     print("Generating test fixtures...")
     generate_ffd_weights()
@@ -1119,4 +1787,13 @@ if __name__ == "__main__":
     generate_multiple_testing()
     generate_structural_breaks()
     generate_volatility_estimators()
+    # P1 fixtures
+    generate_core_statistics()
+    generate_codependence()
+    generate_microstructure()
+    generate_entropy_extended()
+    generate_portfolio_allocation()
+    generate_scoring()
+    generate_strategy_risk_extended()
+    generate_sampling_extended()
     print("Done! All fixtures written to tests/fixtures/")

@@ -1,6 +1,19 @@
 use mlfinance_modeling::cross_validation::purged_kfold::PurgedKFold;
+use mlfinance_modeling::hyperparams::scoring::{accuracy_score, f1_score, neg_log_loss};
 use serde_json::Value;
 use std::fs;
+
+fn parse_f64_array(val: &Value) -> Vec<f64> {
+    val.as_array()
+        .unwrap()
+        .iter()
+        .map(|v| v.as_f64().unwrap())
+        .collect()
+}
+
+fn load_fixture(name: &str) -> Value {
+    serde_json::from_str(&fs::read_to_string(fixture_path(name)).unwrap()).unwrap()
+}
 
 fn fixture_path(name: &str) -> String {
     let manifest = env!("CARGO_MANIFEST_DIR");
@@ -128,6 +141,82 @@ fn test_purged_kfold_fold_count() {
             "Fold count mismatch for n_splits={}, embargo={}",
             n_splits,
             embargo_pct
+        );
+    }
+}
+
+// =====================================================================
+// P1 — Scoring reference tests
+// =====================================================================
+
+#[test]
+fn test_f1_score_match_python() {
+    let data = load_fixture("scoring.json");
+
+    for case in data["cases"].as_array().unwrap() {
+        if case["type"].as_str().unwrap() != "f1_score" {
+            continue;
+        }
+        let label = case["label"].as_str().unwrap();
+        let y_true = parse_f64_array(&case["y_true"]);
+        let y_pred = parse_f64_array(&case["y_pred"]);
+        let expected = case["result"].as_f64().unwrap();
+
+        let actual = f1_score(&y_true, &y_pred);
+        assert!(
+            (actual - expected).abs() < 1e-10,
+            "F1 score mismatch for '{}': got={}, expected={}",
+            label,
+            actual,
+            expected
+        );
+    }
+}
+
+#[test]
+fn test_accuracy_score_match_python() {
+    let data = load_fixture("scoring.json");
+
+    for case in data["cases"].as_array().unwrap() {
+        if case["type"].as_str().unwrap() != "accuracy_score" {
+            continue;
+        }
+        let label = case["label"].as_str().unwrap();
+        let y_true = parse_f64_array(&case["y_true"]);
+        let y_pred = parse_f64_array(&case["y_pred"]);
+        let expected = case["result"].as_f64().unwrap();
+
+        let actual = accuracy_score(&y_true, &y_pred);
+        assert!(
+            (actual - expected).abs() < 1e-10,
+            "Accuracy score mismatch for '{}': got={}, expected={}",
+            label,
+            actual,
+            expected
+        );
+    }
+}
+
+#[test]
+fn test_neg_log_loss_match_python() {
+    let data = load_fixture("scoring.json");
+
+    for case in data["cases"].as_array().unwrap() {
+        if case["type"].as_str().unwrap() != "neg_log_loss" {
+            continue;
+        }
+        let label = case["label"].as_str().unwrap();
+        let y_true = parse_f64_array(&case["y_true"]);
+        let y_proba = parse_f64_array(&case["y_proba"]);
+        let expected = case["result"].as_f64().unwrap();
+
+        let actual = neg_log_loss(&y_true, &y_proba);
+        assert!(
+            (actual - expected).abs() < 1e-10,
+            "Neg log loss mismatch for '{}': got={}, expected={}",
+            label,
+            actual,
+            expected
         );
     }
 }

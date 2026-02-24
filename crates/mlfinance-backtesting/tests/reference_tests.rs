@@ -10,6 +10,8 @@ use mlfinance_backtesting::statistics::hhi::{hhi, hhi_concentration};
 use mlfinance_backtesting::statistics::psr::probabilistic_sharpe_ratio;
 use mlfinance_backtesting::statistics::sharpe::sharpe_ratio;
 use mlfinance_backtesting::strategy_risk::failure_probability::strategy_failure_probability;
+use mlfinance_backtesting::strategy_risk::implied_precision::implied_precision;
+use mlfinance_backtesting::strategy_risk::sr_from_precision::sr_from_precision;
 use ndarray::Array2;
 use serde_json::Value;
 use std::fs;
@@ -457,5 +459,61 @@ fn test_cscv_match_python() {
                 );
             }
         }
+    }
+}
+
+// =====================================================================
+// P1 — Strategy risk extended reference tests
+// =====================================================================
+
+#[test]
+fn test_sr_from_precision_match_python() {
+    let data = load_fixture("strategy_risk_extended.json");
+
+    for case in data["cases"].as_array().unwrap() {
+        if case["type"].as_str().unwrap() != "sr_from_precision" {
+            continue;
+        }
+        let precision = case["precision"].as_f64().unwrap();
+        let freq = case["freq"].as_f64().unwrap();
+        let ratio = case["avg_win_loss_ratio"].as_f64().unwrap();
+        let expected = case["result"].as_f64().unwrap();
+
+        let actual = sr_from_precision(precision, freq, ratio);
+        assert!(
+            (actual - expected).abs() < 1e-10,
+            "SR from precision mismatch: p={}, freq={}, ratio={}, got={}, expected={}",
+            precision,
+            freq,
+            ratio,
+            actual,
+            expected
+        );
+    }
+}
+
+#[test]
+fn test_implied_precision_match_python() {
+    let data = load_fixture("strategy_risk_extended.json");
+
+    for case in data["cases"].as_array().unwrap() {
+        if case["type"].as_str().unwrap() != "implied_precision" {
+            continue;
+        }
+        let target_sr = case["target_sr"].as_f64().unwrap();
+        let freq = case["freq"].as_f64().unwrap();
+        let ratio = case["avg_win_loss_ratio"].as_f64().unwrap();
+        let expected = case["result"].as_f64().unwrap();
+
+        let actual = implied_precision(target_sr, freq, ratio);
+        assert!(
+            (actual - expected).abs() < 1e-4,
+            "Implied precision mismatch: sr={}, freq={}, ratio={}, got={}, expected={}",
+            target_sr,
+            freq,
+            ratio,
+            actual,
+            expected
+        );
     }
 }

@@ -2,12 +2,26 @@ use mlfinance_sampling::concurrency::average_uniqueness::average_uniqueness;
 use mlfinance_sampling::concurrency::indicator_matrix::get_indicator_matrix;
 use mlfinance_sampling::fracdiff::ffd::frac_diff_ffd;
 use mlfinance_sampling::fracdiff::weights::get_weights_ffd;
+use mlfinance_sampling::weights::class_weights::balanced_class_weights;
+use mlfinance_sampling::weights::time_decay::time_decay;
 use serde_json::Value;
 use std::fs;
 
 fn fixture_path(name: &str) -> String {
     let manifest = env!("CARGO_MANIFEST_DIR");
     format!("{}/../../tests/fixtures/{}", manifest, name)
+}
+
+fn load_fixture(name: &str) -> Value {
+    serde_json::from_str(&fs::read_to_string(fixture_path(name)).unwrap()).unwrap()
+}
+
+fn parse_f64_array(val: &Value) -> Vec<f64> {
+    val.as_array()
+        .unwrap()
+        .iter()
+        .map(|v| v.as_f64().unwrap())
+        .collect()
 }
 
 #[test]
@@ -195,6 +209,91 @@ fn test_indicator_matrix_structure() {
                 j,
                 start,
                 end
+            );
+        }
+    }
+}
+
+// =====================================================================
+// P1 — Sampling extended reference tests
+// =====================================================================
+
+#[test]
+fn test_time_decay_match_python() {
+    let data = load_fixture("sampling_extended.json");
+
+    for case in data["cases"].as_array().unwrap() {
+        if case["type"].as_str().unwrap() != "time_decay" {
+            continue;
+        }
+        let label = case["label"].as_str().unwrap();
+        let weights = parse_f64_array(&case["weights"]);
+        let oldest_weight = case["oldest_weight"].as_f64().unwrap();
+        let expected = parse_f64_array(&case["result"]);
+
+        let actual = time_decay(&weights, oldest_weight);
+        assert_eq!(
+            actual.len(),
+            expected.len(),
+            "Time decay length mismatch for '{}': got={}, expected={}",
+            label,
+            actual.len(),
+            expected.len()
+        );
+        for (i, (a, e)) in actual.iter().zip(expected.iter()).enumerate() {
+            assert!(
+                (a - e).abs() < 1e-10,
+                "Time decay[{}] mismatch for '{}': got={}, expected={}",
+                i,
+                label,
+                a,
+                e
+            );
+        }
+    }
+}
+
+#[test]
+fn test_balanced_class_weights_match_python() {
+    let data = load_fixture("sampling_extended.json");
+
+    for case in data["cases"].as_array().unwrap() {
+        if case["type"].as_str().unwrap() != "balanced_class_weights" {
+            continue;
+        }
+        let label = case["label"].as_str().unwrap();
+        let labels: Vec<i32> = case["labels"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_i64().unwrap() as i32)
+            .collect();
+        let expected_weights = case["weights"].as_object().unwrap();
+
+        let actual = balanced_class_weights(&labels);
+
+        assert_eq!(
+            actual.len(),
+            expected_weights.len(),
+            "Class weights count mismatch for '{}': got={}, expected={}",
+            label,
+            actual.len(),
+            expected_weights.len()
+        );
+
+        for (key, val) in expected_weights {
+            let class_label: i32 = key.parse().unwrap();
+            let expected_w = val.as_f64().unwrap();
+            let actual_w = actual.get(&class_label).unwrap_or_else(|| {
+                panic!("Missing class {} in weights for '{}'", class_label, label)
+            });
+            assert!(
+                (actual_w - expected_w).abs() < 1e-10,
+                "Class weight[{}] mismatch for '{}': got={}, expected={}",
+                class_label,
+                label,
+                actual_w,
+                expected_w
             );
         }
     }

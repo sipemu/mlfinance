@@ -1,0 +1,145 @@
+{
+  "cases": [
+    {
+      "type": "time_decay",
+      "label": "full_decay",
+      "weights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "oldest_weight": 0.0,
+      "result": [
+        0.0,
+        0.3333333333333333,
+        0.6666666666666666,
+        1.0
+      ]
+    },
+    {
+      "type": "time_decay",
+      "label": "no_decay",
+      "weights": [
+        1.0,
+        2.0,
+        3.0,
+        4.0
+      ],
+      "oldest_weight": 1.0,
+      "result": [
+        1.0,
+        2.0,
+        3.0,
+        4.0
+      ]
+    },
+    {
+      "type": "time_decay",
+      "label": "half_decay",
+      "weights": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "oldest_weight": 0.5,
+      "result": [
+        0.5,
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "type": "time_decay",
+      "label": "varying",
+      "weights": [
+        2.0,
+        4.0,
+        6.0
+      ],
+      "oldest_weight": 0.5,
+      "result": [
+        1.0,
+        3.0,
+        6.0
+      ]
+    },
+    {
+      "type": "time_decay",
+      "label": "negative_oldest",
+      "weights": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "oldest_weight": -2.0,
+      "result": [
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "type": "balanced_class_weights",
+      "label": "balanced_2class",
+      "labels": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "weights": {
+        "0": 1.0,
+        "1": 1.0
+      }
+    },
+    {
+      "type": "balanced_class_weights",
+      "label": "imbalanced_2class",
+      "labels": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "weights": {
+        "0": 0.6666666666666666,
+        "1": 2.0
+      }
+    },
+    {
+      "type": "balanced_class_weights",
+      "label": "three_class",
+      "labels": [
+        -1,
+        -1,
+        0,
+        1,
+        1,
+        1
+      ],
+      "weights": {
+        "-1": 1.0,
+        "0": 2.0,
+        "1": 0.6666666666666666
+      }
+    },
+    {
+      "type": "balanced_class_weights",
+      "label": "single_class",
+      "labels": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "weights": {
+        "1": 1.0
+      }
+    }
+  ]
+}

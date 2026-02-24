@@ -1,0 +1,74 @@
+{
+  "cases": [
+    {
+      "type": "sr_from_precision",
+      "precision": 0.55,
+      "freq": 252.0,
+      "avg_win_loss_ratio": 1.0,
+      "result": 1.5954480704349328
+    },
+    {
+      "type": "sr_from_precision",
+      "precision": 0.6,
+      "freq": 252.0,
+      "avg_win_loss_ratio": 1.5,
+      "result": 6.4807406984078595
+    },
+    {
+      "type": "sr_from_precision",
+      "precision": 0.45,
+      "freq": 52.0,
+      "avg_win_loss_ratio": 2.0,
+      "result": 1.6910671757921167
+    },
+    {
+      "type": "sr_from_precision",
+      "precision": 0.7,
+      "freq": 12.0,
+      "avg_win_loss_ratio": 1.0,
+      "result": 1.5118578920369083
+    },
+    {
+      "type": "sr_from_precision",
+      "precision": 0.5,
+      "freq": 252.0,
+      "avg_win_loss_ratio": 1.0,
+      "result": 0.0
+    },
+    {
+      "type": "sr_from_precision",
+      "precision": 0.4,
+      "freq": 252.0,
+      "avg_win_loss_ratio": 3.0,
+      "result": 4.860555523805898
+    },
+    {
+      "type": "implied_precision",
+      "target_sr": 1.5954480704349328,
+      "freq": 252.0,
+      "avg_win_loss_ratio": 1.0,
+      "result": 0.55
+    },
+    {
+      "type": "implied_precision",
+      "target_sr": 6.4807406984078595,
+      "freq": 252.0,
+      "avg_win_loss_ratio": 1.5,
+      "result": 0.6
+    },
+    {
+      "type": "implied_precision",
+      "target_sr": 1.5118578920369083,
+      "freq": 12.0,
+      "avg_win_loss_ratio": 1.0,
+      "result": 0.7
+    },
+    {
+      "type": "implied_precision",
+      "target_sr": 0.0,
+      "freq": 252.0,
+      "avg_win_loss_ratio": 1.0,
+      "result": 0.5
+    }
+  ]
+}
