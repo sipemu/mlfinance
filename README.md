@@ -1,4 +1,4 @@
-# mlfinance
+# Advances in Financial Machine Learning
 
 [![CI](https://github.com/sipemu/mlfinance/actions/workflows/ci.yml/badge.svg)](https://github.com/sipemu/mlfinance/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/sipemu/mlfinance/branch/main/graph/badge.svg)](https://codecov.io/gh/sipemu/mlfinance)
