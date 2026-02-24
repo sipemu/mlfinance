@@ -3,7 +3,7 @@ import sys as _sys
 from pymlfinance._native import *  # noqa: F401,F403
 from pymlfinance import _native
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 # Register submodules at expected paths for backward compat
 # e.g. `from pymlfinance.core import ewma` or `from pymlfinance import core`
